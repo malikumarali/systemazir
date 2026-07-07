@@ -1,14 +1,19 @@
 -- ============================================================
--- Agency OS — Supabase Schema (PostgreSQL)
+-- Agency OS — Complete Supabase Database Schema (PostgreSQL)
 -- Run this in your Supabase SQL editor to set up the database
 -- ============================================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- ---------------------------------------------------------------
--- Users / Profiles table (extends Supabase auth.users)
--- ---------------------------------------------------------------
+-- 1. Drop existing tables if they exist (to ensure a clean slate)
+DROP TABLE IF EXISTS outbound_entries CASCADE;
+DROP TABLE IF EXISTS inbound_entries CASCADE;
+DROP TABLE IF EXISTS leads CASCADE;
+DROP TABLE IF EXISTS settings CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+
+-- 2. Profiles Table (extends Supabase auth.users)
 CREATE TABLE profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT NOT NULL,
@@ -17,11 +22,11 @@ CREATE TABLE profiles (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Auto-create profile on signup
+-- Trigger function to automatically create a profile row on signup
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, email, name, role)
+  INSERT INTO public.profiles (id, email, name, role)
   VALUES (
     NEW.id,
     NEW.email,
@@ -32,27 +37,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Create the trigger
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
--- ---------------------------------------------------------------
--- Settings table
--- ---------------------------------------------------------------
+-- 3. Settings Table
 CREATE TABLE settings (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 280,
   currency_display TEXT NOT NULL DEFAULT 'Both' CHECK (currency_display IN ('USD', 'PKR', 'Both')),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ---------------------------------------------------------------
--- Leads table (Module 1)
--- ---------------------------------------------------------------
+-- 4. Leads Table
 CREATE TABLE leads (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   client_name TEXT NOT NULL,
   lead_source TEXT NOT NULL CHECK (lead_source IN ('Meta Ads', 'Google Ads', 'Cold Call', 'Cold Email', 'Cold Social DM', 'Referral', 'Other')),
   niche TEXT NOT NULL,
@@ -67,15 +69,12 @@ CREATE TABLE leads (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ---------------------------------------------------------------
--- Inbound entries table (Module 2 — Meta Ads / Google Ads)
--- ---------------------------------------------------------------
+-- 5. Inbound Entries Table (Meta / Google Ads Funnels)
 CREATE TABLE inbound_entries (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   channel TEXT NOT NULL CHECK (channel IN ('Meta Ads', 'Google Ads')),
-  month TEXT NOT NULL, -- YYYY-MM format
-  -- Inputs
+  month TEXT NOT NULL, -- YYYY-MM
   budget_usd DECIMAL(12,2) NOT NULL,
   cpc DECIMAL(8,4) NOT NULL,
   conv_ratio DECIMAL(6,4) NOT NULL,
@@ -86,7 +85,6 @@ CREATE TABLE inbound_entries (
   avg_ticket_size DECIMAL(12,2) NOT NULL,
   upsell_ratio DECIMAL(6,4) NOT NULL,
   upsell_value DECIMAL(12,2) NOT NULL,
-  -- Calculated outputs (stored for historical accuracy)
   clicks DECIMAL(12,2),
   leads DECIMAL(12,2),
   appointments DECIMAL(12,2),
@@ -105,22 +103,18 @@ CREATE TABLE inbound_entries (
   pipeline_deals DECIMAL(12,2),
   pipeline_worth DECIMAL(12,2),
   gross_pl DECIMAL(12,2),
-  -- Currency
   exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 280,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ---------------------------------------------------------------
--- Outbound entries table (Module 2 — Cold Call / Email / DM)
--- ---------------------------------------------------------------
+-- 6. Outbound Entries Table (Cold Call / Email / DM)
 CREATE TABLE outbound_entries (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   channel TEXT NOT NULL CHECK (channel IN ('Cold Call', 'Cold Email', 'Cold Social DM')),
-  month TEXT NOT NULL, -- YYYY-MM format
+  month TEXT NOT NULL, -- YYYY-MM
   tier TEXT NOT NULL CHECK (tier IN ('S', 'M', 'L')),
-  -- Funnel inputs
-  outbound INTEGER NOT NULL, -- dials, emails, or DMs sent
+  outbound INTEGER NOT NULL,
   conn_ratio DECIMAL(6,4),
   int_ratio DECIMAL(6,4),
   open_ratio DECIMAL(6,4),
@@ -134,7 +128,6 @@ CREATE TABLE outbound_entries (
   avg_ticket_size DECIMAL(12,2) NOT NULL,
   upsell_ratio DECIMAL(6,4) NOT NULL,
   upsell_value DECIMAL(12,2) NOT NULL,
-  -- Calculated funnel outputs
   step1 DECIMAL(12,2),
   step2 DECIMAL(12,2),
   step3 DECIMAL(12,2),
@@ -147,7 +140,6 @@ CREATE TABLE outbound_entries (
   upsells DECIMAL(12,2),
   upsell_revenue DECIMAL(12,2),
   t_recurring DECIMAL(12,2),
-  -- Costs (editable per SRS Table 8)
   listing DECIMAL(10,2) DEFAULT 0,
   sdr DECIMAL(10,2) DEFAULT 0,
   closer DECIMAL(10,2) DEFAULT 0,
@@ -156,61 +148,101 @@ CREATE TABLE outbound_entries (
   training DECIMAL(10,2) DEFAULT 0,
   total_est_cost DECIMAL(12,2),
   gross_pl DECIMAL(12,2),
-  -- Currency
   exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 280,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ---------------------------------------------------------------
--- Row Level Security (RLS) Policies
--- ---------------------------------------------------------------
+-- 7. Enable Row Level Security (RLS)
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.inbound_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.outbound_entries ENABLE ROW LEVEL SECURITY;
 
--- Enable RLS on all tables
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
-ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
-ALTER TABLE inbound_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE outbound_entries ENABLE ROW LEVEL SECURITY;
+-- 8. RLS Policies
 
--- Profiles: Users can only see their own profile
-CREATE POLICY "Users can view own profile" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update own profile" ON profiles FOR UPDATE USING (auth.uid() = id);
+-- Profiles Policies
+CREATE POLICY "Allow view own profile" ON public.profiles
+  FOR SELECT USING (auth.uid() = id);
 
--- Settings: Founders only
-CREATE POLICY "Founder can manage settings" ON settings USING (
-  auth.uid() = user_id AND EXISTS (
-    SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'founder'
-  )
-);
+CREATE POLICY "Allow update own profile" ON public.profiles
+  FOR UPDATE USING (auth.uid() = id);
 
--- Leads: All authenticated users can insert; founders can update/delete
-CREATE POLICY "Authenticated users can insert leads" ON leads FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Users can view leads" ON leads FOR SELECT USING (auth.uid() IS NOT NULL);
-CREATE POLICY "Founders can update leads" ON leads FOR UPDATE USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'founder')
-);
-CREATE POLICY "Founders can delete leads" ON leads FOR DELETE USING (
-  EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'founder')
-);
+-- Settings Policies (Founders only)
+CREATE POLICY "Allow founders to manage settings" ON public.settings
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
 
--- Matrix entries: All authenticated users can insert; founders can update/delete
-CREATE POLICY "Auth users can insert inbound" ON inbound_entries FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Auth users can view inbound" ON inbound_entries FOR SELECT USING (auth.uid() IS NOT NULL);
+-- Leads Policies (Founders see all; Team members see only their own)
+CREATE POLICY "Allow select leads" ON public.leads
+  FOR SELECT USING (
+    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    OR (auth.uid() = user_id)
+  );
 
-CREATE POLICY "Auth users can insert outbound" ON outbound_entries FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
-CREATE POLICY "Auth users can view outbound" ON outbound_entries FOR SELECT USING (auth.uid() IS NOT NULL);
+CREATE POLICY "Allow insert leads" ON public.leads
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
--- ---------------------------------------------------------------
--- Indexes for performance
--- ---------------------------------------------------------------
-CREATE INDEX idx_leads_user_id ON leads(user_id);
-CREATE INDEX idx_leads_lead_source ON leads(lead_source);
-CREATE INDEX idx_leads_niche ON leads(niche);
-CREATE INDEX idx_leads_deal_status ON leads(deal_status);
-CREATE INDEX idx_leads_lead_date ON leads(lead_date);
-CREATE INDEX idx_inbound_user_id ON inbound_entries(user_id);
-CREATE INDEX idx_inbound_channel ON inbound_entries(channel);
-CREATE INDEX idx_inbound_month ON inbound_entries(month);
-CREATE INDEX idx_outbound_user_id ON outbound_entries(user_id);
-CREATE INDEX idx_outbound_channel ON outbound_entries(channel);
-CREATE INDEX idx_outbound_month ON outbound_entries(month);
+CREATE POLICY "Allow update leads" ON public.leads
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+CREATE POLICY "Allow delete leads" ON public.leads
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+-- Inbound entries Policies (Founders see all; Team members see only their own)
+CREATE POLICY "Allow select inbound" ON public.inbound_entries
+  FOR SELECT USING (
+    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    OR (auth.uid() = user_id)
+  );
+
+CREATE POLICY "Allow insert inbound" ON public.inbound_entries
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Allow update inbound" ON public.inbound_entries
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+CREATE POLICY "Allow delete inbound" ON public.inbound_entries
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+-- Outbound entries Policies (Founders see all; Team members see only their own)
+CREATE POLICY "Allow select outbound" ON public.outbound_entries
+  FOR SELECT USING (
+    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    OR (auth.uid() = user_id)
+  );
+
+CREATE POLICY "Allow insert outbound" ON public.outbound_entries
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Allow update outbound" ON public.outbound_entries
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+CREATE POLICY "Allow delete outbound" ON public.outbound_entries
+  FOR DELETE USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+  );
+
+-- 9. Performance Indexes
+CREATE INDEX IF NOT EXISTS idx_leads_user_id ON public.leads(user_id);
+CREATE INDEX IF NOT EXISTS idx_leads_lead_source ON public.leads(lead_source);
+CREATE INDEX IF NOT EXISTS idx_leads_niche ON public.leads(niche);
+CREATE INDEX IF NOT EXISTS idx_leads_deal_status ON public.leads(deal_status);
+CREATE INDEX IF NOT EXISTS idx_leads_lead_date ON public.leads(lead_date);
+CREATE INDEX IF NOT EXISTS idx_inbound_user_id ON public.inbound_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_inbound_channel ON public.inbound_entries(channel);
+CREATE INDEX IF NOT EXISTS idx_inbound_month ON public.inbound_entries(month);
+CREATE INDEX IF NOT EXISTS idx_outbound_user_id ON public.outbound_entries(user_id);
+CREATE INDEX IF NOT EXISTS idx_outbound_channel ON public.outbound_entries(channel);
+CREATE INDEX IF NOT EXISTS idx_outbound_month ON public.outbound_entries(month);
