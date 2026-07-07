@@ -1,20 +1,20 @@
 -- ============================================================
 -- Agency OS — Complete Supabase Database Schema (PostgreSQL)
--- Run this in your Supabase SQL editor to set up the database
+-- Fixed: recursion-free RLS policies & client-side privilege escalation block
 -- ============================================================
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. Drop existing tables if they exist (to ensure a clean slate)
-DROP TABLE IF EXISTS outbound_entries CASCADE;
-DROP TABLE IF EXISTS inbound_entries CASCADE;
-DROP TABLE IF EXISTS leads CASCADE;
-DROP TABLE IF EXISTS settings CASCADE;
-DROP TABLE IF EXISTS profiles CASCADE;
+DROP TABLE IF EXISTS public.outbound_entries CASCADE;
+DROP TABLE IF EXISTS public.inbound_entries CASCADE;
+DROP TABLE IF EXISTS public.leads CASCADE;
+DROP TABLE IF EXISTS public.settings CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
 
 -- 2. Profiles Table (extends Supabase auth.users)
-CREATE TABLE profiles (
+CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   email TEXT NOT NULL,
   name TEXT,
@@ -23,7 +23,7 @@ CREATE TABLE profiles (
 );
 
 -- Trigger function to automatically create a profile row on signup
-CREATE OR REPLACE FUNCTION handle_new_user()
+CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.profiles (id, email, name, role)
@@ -37,13 +37,30 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Create the trigger
+-- Create the trigger for user signup
 CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Trigger function to block client-side modifications of the role column
+CREATE OR REPLACE FUNCTION public.check_profile_role_update()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- If request originates from client session (auth.uid() is not null) and role is changed
+  IF (auth.uid() IS NOT NULL) AND (NEW.role IS DISTINCT FROM OLD.role) THEN
+    RAISE EXCEPTION 'Modifying the role column is restricted to admin keys only.';
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create the trigger for profile update
+CREATE OR REPLACE TRIGGER on_profile_role_update
+  BEFORE UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.check_profile_role_update();
 
 -- 3. Settings Table
-CREATE TABLE settings (
+CREATE TABLE public.settings (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   exchange_rate DECIMAL(10,4) NOT NULL DEFAULT 280,
@@ -52,7 +69,7 @@ CREATE TABLE settings (
 );
 
 -- 4. Leads Table
-CREATE TABLE leads (
+CREATE TABLE public.leads (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   client_name TEXT NOT NULL,
@@ -70,7 +87,7 @@ CREATE TABLE leads (
 );
 
 -- 5. Inbound Entries Table (Meta / Google Ads Funnels)
-CREATE TABLE inbound_entries (
+CREATE TABLE public.inbound_entries (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   channel TEXT NOT NULL CHECK (channel IN ('Meta Ads', 'Google Ads')),
@@ -108,7 +125,7 @@ CREATE TABLE inbound_entries (
 );
 
 -- 6. Outbound Entries Table (Cold Call / Email / DM)
-CREATE TABLE outbound_entries (
+CREATE TABLE public.outbound_entries (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   channel TEXT NOT NULL CHECK (channel IN ('Cold Call', 'Cold Email', 'Cold Social DM')),
@@ -161,9 +178,14 @@ ALTER TABLE public.outbound_entries ENABLE ROW LEVEL SECURITY;
 
 -- 8. RLS Policies
 
--- Profiles Policies
+-- Profiles Policies (Recursion-free check via JWT metadata)
 CREATE POLICY "Allow view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Allow founders to view all profiles" ON public.profiles
+  FOR SELECT USING (
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+  );
 
 CREATE POLICY "Allow update own profile" ON public.profiles
   FOR UPDATE USING (auth.uid() = id);
@@ -171,13 +193,13 @@ CREATE POLICY "Allow update own profile" ON public.profiles
 -- Settings Policies (Founders only)
 CREATE POLICY "Allow founders to manage settings" ON public.settings
   FOR ALL USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 -- Leads Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select leads" ON public.leads
   FOR SELECT USING (
-    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
     OR (auth.uid() = user_id)
   );
 
@@ -186,18 +208,18 @@ CREATE POLICY "Allow insert leads" ON public.leads
 
 CREATE POLICY "Allow update leads" ON public.leads
   FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 CREATE POLICY "Allow delete leads" ON public.leads
   FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 -- Inbound entries Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select inbound" ON public.inbound_entries
   FOR SELECT USING (
-    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
     OR (auth.uid() = user_id)
   );
 
@@ -206,18 +228,18 @@ CREATE POLICY "Allow insert inbound" ON public.inbound_entries
 
 CREATE POLICY "Allow update inbound" ON public.inbound_entries
   FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 CREATE POLICY "Allow delete inbound" ON public.inbound_entries
   FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 -- Outbound entries Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select outbound" ON public.outbound_entries
   FOR SELECT USING (
-    (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder'))
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
     OR (auth.uid() = user_id)
   );
 
@@ -226,12 +248,12 @@ CREATE POLICY "Allow insert outbound" ON public.outbound_entries
 
 CREATE POLICY "Allow update outbound" ON public.outbound_entries
   FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 CREATE POLICY "Allow delete outbound" ON public.outbound_entries
   FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'founder')
+    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
   );
 
 -- 9. Performance Indexes
