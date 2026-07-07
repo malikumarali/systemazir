@@ -1,8 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { User, UserRole } from '@/lib/types'
-import { DEMO_USERS } from '@/lib/mockData'
+import { User } from '@/lib/types'
 
 interface AuthContextValue {
   user: User | null
@@ -20,36 +19,75 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for stored session
-    const stored = localStorage.getItem('agencyos_user')
-    if (stored) {
+    const storedUser = localStorage.getItem('agencyos_user')
+    const storedToken = localStorage.getItem('agencyos_token')
+    if (storedUser) {
       try {
-        setUser(JSON.parse(stored))
+        setUser(JSON.parse(storedUser))
       } catch {
         localStorage.removeItem('agencyos_user')
+        localStorage.removeItem('agencyos_token')
       }
     }
-    setIsLoading(false)
+
+    const verifySession = async () => {
+      if (storedToken) {
+        try {
+          const res = await fetch('/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${storedToken}` }
+          })
+          const json = await res.json()
+          if (res.ok && json.ok) {
+            setUser(json.data.user)
+            localStorage.setItem('agencyos_user', JSON.stringify(json.data.user))
+          } else {
+            setUser(null)
+            localStorage.removeItem('agencyos_user')
+            localStorage.removeItem('agencyos_token')
+          }
+        } catch {
+          // Fallback to offline local storage user if network fails
+        }
+      }
+      setIsLoading(false)
+    }
+
+    verifySession()
   }, [])
 
   const login = async (email: string, password: string): Promise<{ error?: string }> => {
-    // Demo auth: accept any password for demo accounts
-    const found = DEMO_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
-    if (!found) {
-      return { error: 'No account found with this email.' }
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      })
+      const json = await res.json()
+      if (!res.ok || !json.ok) {
+        return { error: json.error || 'Invalid credentials' }
+      }
+      
+      const { user: loggedInUser, token } = json.data
+      setUser(loggedInUser)
+      localStorage.setItem('agencyos_user', JSON.stringify(loggedInUser))
+      if (token) {
+        localStorage.setItem('agencyos_token', token)
+      } else {
+        localStorage.removeItem('agencyos_token')
+      }
+      return {}
+    } catch (e: any) {
+      return { error: e.message || 'An error occurred during login.' }
     }
-    // For demo: password is 'demo123' for all accounts
-    if (password !== 'demo123') {
-      return { error: 'Invalid password. Use demo123 for demo accounts.' }
-    }
-    setUser(found)
-    localStorage.setItem('agencyos_user', JSON.stringify(found))
-    return {}
   }
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch {}
     setUser(null)
     localStorage.removeItem('agencyos_user')
+    localStorage.removeItem('agencyos_token')
   }
 
   return (

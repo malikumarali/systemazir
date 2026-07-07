@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { Eye, EyeOff, Zap, TrendingUp, Target, BarChart3, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Target, TrendingUp, BarChart3, ArrowRight, ShieldCheck } from 'lucide-react'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -30,156 +30,270 @@ export default function LoginPage() {
   }
 
   const quickLogin = async (role: 'founder' | 'team') => {
-    const email = role === 'founder' ? 'founder@agencyos.com' : 'team@agencyos.com'
-    setEmail(email)
+    const e = role === 'founder' ? 'founder@agencyos.com' : 'team@agencyos.com'
+    setEmail(e)
     setPassword('demo123')
-    const result = await login(email, 'demo123')
+    const result = await login(e, 'demo123')
     if (!result.error) {
       router.replace(role === 'founder' ? '/dashboard' : '/leads')
     }
   }
 
-  return (
-    <div className="min-h-screen flex bg-[radial-gradient(circle_at_top_left,rgba(79,124,255,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(255,77,77,0.12),transparent_24%),#040814]">
-      <div className="hidden lg:flex lg:w-1/2 flex-col justify-between p-12">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500 via-blue-600 to-red-500 shadow-lg shadow-blue-500/20">
-            <Zap className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-xl font-semibold text-white tracking-tight">Agency OS</span>
-        </div>
+  const FEATURES = [
+    { icon: Target, label: 'Lead Source Attribution', desc: 'Every deal tagged to its acquisition channel — no guessing.' },
+    { icon: TrendingUp, label: 'True ROI Calculation', desc: 'Revenue minus all costs. The number that actually matters.' },
+    { icon: BarChart3, label: 'Niche Profitability Rank', desc: 'Which niche makes you money? Now you know for certain.' },
+  ]
 
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-4xl font-bold text-white leading-tight mb-4">
-              Finally know where your{' '}
-              <span className="gradient-text">best clients come from.</span>
+  return (
+    <div className="min-h-screen flex" style={{ background: 'var(--ink-900)' }}>
+
+      {/* ---- Left: Statement panel ---- */}
+      <div
+        className="hidden lg:flex lg:w-[52%] flex-col justify-between relative overflow-hidden"
+        style={{
+          background: 'var(--ink-800)',
+          borderRight: '1px solid var(--ink-600)',
+        }}
+      >
+        {/* Sienna top accent bar */}
+        <div style={{ height: '3px', background: 'var(--sienna)', width: '100%' }} />
+
+        {/* Content */}
+        <div className="flex flex-col flex-1 px-14 py-12">
+          {/* Wordmark */}
+          <div className="flex items-center gap-3 mb-auto">
+            <div style={{
+              width: 10, height: 10,
+              background: 'var(--sienna)',
+              borderRadius: 2,
+              flexShrink: 0,
+            }} />
+            <span style={{
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 700,
+              fontSize: 13,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: 'var(--cream-muted)',
+            }}>
+              Agency OS
+            </span>
+          </div>
+
+          {/* Main statement — deliberately off-center, large */}
+          <div style={{ paddingTop: '15vh', paddingBottom: '4vh' }}>
+            <p style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 11,
+              fontWeight: 600,
+              letterSpacing: '0.15em',
+              textTransform: 'uppercase',
+              color: 'var(--sienna)',
+              marginBottom: 20,
+            }}>
+              Performance Intelligence
+            </p>
+            <h1 style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2.4rem, 4vw, 3.4rem)',
+              lineHeight: 1.05,
+              color: 'var(--cream)',
+              letterSpacing: '-0.02em',
+              maxWidth: 480,
+            }}>
+              Finally know where your best clients actually come from.
             </h1>
-            <p className="text-slate-400 text-lg leading-relaxed max-w-xl">
-              Track ROI, niche profitability, and lead sources in one unified operating system built for modern agencies.
+            <p style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: 15,
+              lineHeight: 1.7,
+              color: 'var(--ink-300)',
+              marginTop: 20,
+              maxWidth: 400,
+              fontWeight: 400,
+            }}>
+              ROI, niche profitability, and acquisition attribution. One operating system built for agencies that demand clarity over comfort.
             </p>
           </div>
 
-          <div className="space-y-4">
-            {[
-              { icon: Target, label: 'Lead Source Tracker', desc: 'Tag every deal to its acquisition channel' },
-              { icon: TrendingUp, label: 'Revenue vs Spend', desc: 'Real ROI after team costs and ad spend' },
-              { icon: BarChart3, label: 'Niche Ranking', desc: 'Know which niche generates the most profit' },
-            ].map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="flex items-start gap-4 p-4 rounded-2xl glass">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 bg-blue-500/10 border border-blue-500/20">
-                  <Icon className="w-5 h-5 text-blue-300" />
+          {/* Feature list */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {FEATURES.map(({ icon: Icon, label, desc }) => (
+              <div
+                key={label}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 14,
+                  padding: '16px 0',
+                  borderTop: '1px solid var(--ink-600)',
+                }}
+              >
+                <div style={{
+                  width: 32, height: 32,
+                  background: 'var(--sienna-faint)',
+                  border: '1px solid rgba(194,82,42,0.2)',
+                  borderRadius: 2,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  flexShrink: 0,
+                }}>
+                  <Icon size={14} color="var(--sienna)" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <div className="text-white font-semibold text-sm">{label}</div>
-                  <div className="text-slate-400 text-xs mt-0.5">{desc}</div>
+                  <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--cream)', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink-300)', lineHeight: 1.5 }}>{desc}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <ShieldCheck className="w-4 h-4 text-blue-400" />
-          Agency OS Prototype v1.0 · Built for founders who want clarity
+        {/* Footer */}
+        <div style={{
+          padding: '14px 56px',
+          borderTop: '1px solid var(--ink-600)',
+          display: 'flex', alignItems: 'center', gap: 8,
+        }}>
+          <ShieldCheck size={13} color="var(--ink-400)" strokeWidth={1.5} />
+          <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>
+            Agency OS v1.0 · Session-secured · Role-based access
+          </span>
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500 via-blue-600 to-red-500">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-xl font-semibold text-white tracking-tight">Agency OS</span>
+      {/* ---- Right: Login form ---- */}
+      <div className="flex-1 flex flex-col justify-center px-8 py-12" style={{ maxWidth: 520, margin: '0 auto' }}>
+
+        {/* Mobile wordmark */}
+        <div className="flex items-center gap-3 mb-10 lg:hidden">
+          <div style={{ width: 8, height: 8, background: 'var(--sienna)', borderRadius: 1 }} />
+          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--cream-muted)' }}>
+            Agency OS
+          </span>
+        </div>
+
+        {/* Form header */}
+        <div style={{ marginBottom: 36 }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--cream)', lineHeight: 1.1, marginBottom: 8 }}>
+            Sign in
+          </h2>
+          <p style={{ fontSize: 13, color: 'var(--ink-300)', fontWeight: 400 }}>
+            Access your agency command center
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+              Email
+            </label>
+            <input
+              type="email"
+              className="field"
+              placeholder="you@agency.com"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              id="login-email"
+              autoComplete="email"
+            />
           </div>
 
-          <div className="panel rounded-[28px] p-8">
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-2">Welcome back</h2>
-              <p className="text-slate-400 text-sm">Sign in to your agency command center</p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
-                <input
-                  type="email"
-                  className="input-field"
-                  placeholder="you@agencyos.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  id="login-email"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-300 mb-1.5">Password</label>
-                <div className="relative">
-                  <input
-                    type={showPw ? 'text' : 'password'}
-                    className="input-field pr-10"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    required
-                    id="login-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-100 transition-colors"
-                    onClick={() => setShowPw(!showPw)}
-                  >
-                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
-
+          <div>
+            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+              Password
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPw ? 'text' : 'password'}
+                className="field"
+                style={{ paddingRight: 44 }}
+                placeholder="••••••••"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                required
+                id="login-password"
+                autoComplete="current-password"
+              />
               <button
-                type="submit"
-                disabled={loading}
-                className="btn-primary w-full py-3 px-4 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                id="login-submit"
+                type="button"
+                onClick={() => setShowPw(!showPw)}
+                style={{
+                  position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: 'var(--ink-400)', display: 'flex', alignItems: 'center',
+                  padding: 4,
+                }}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Signing in...
-                  </span>
-                ) : 'Sign In'}
+                {showPw ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
               </button>
-            </form>
-
-            <div className="mt-6 pt-6 border-t border-slate-800/70">
-              <p className="text-slate-500 text-xs text-center mb-3">Quick demo access</p>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => quickLogin('founder')}
-                  className="p-3 rounded-xl text-center transition-all hover:border-blue-500/50 border border-blue-500/20 bg-blue-500/10"
-                  id="demo-founder-login"
-                >
-                  <div className="text-blue-300 font-semibold text-sm">Founder</div>
-                  <div className="text-slate-500 text-xs mt-0.5">Full access</div>
-                </button>
-                <button
-                  onClick={() => quickLogin('team')}
-                  className="p-3 rounded-xl text-center transition-all hover:border-red-500/40 border border-red-500/20 bg-red-500/10"
-                  id="demo-team-login"
-                >
-                  <div className="text-red-300 font-semibold text-sm">Team Member</div>
-                  <div className="text-slate-500 text-xs mt-0.5">Input only</div>
-                </button>
-              </div>
-              <p className="text-slate-600 text-xs text-center mt-3">Password: demo123</p>
             </div>
           </div>
+
+          {error && (
+            <div style={{
+              padding: '10px 14px',
+              background: 'rgba(217,79,79,0.08)',
+              border: '1px solid rgba(217,79,79,0.3)',
+              borderLeft: '2px solid #d94f4f',
+              borderRadius: 2,
+              fontSize: 13,
+              color: '#e88080',
+            }}>
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary press-effect"
+            style={{ marginTop: 4, padding: '12px 20px', fontSize: 14 }}
+            id="login-submit"
+          >
+            {loading ? (
+              <>
+                <div className="spinner" style={{ width: 14, height: 14 }} />
+                Signing in…
+              </>
+            ) : (
+              <>
+                Sign In
+                <ArrowRight size={14} strokeWidth={2} />
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Demo access */}
+        <div style={{ marginTop: 40, paddingTop: 24, borderTop: '1px solid var(--ink-600)' }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-400)', marginBottom: 12 }}>
+            Demo Access
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <button
+              onClick={() => quickLogin('founder')}
+              className="btn btn-ghost press-effect"
+              style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '12px 14px' }}
+              id="demo-founder-login"
+            >
+              <span style={{ fontWeight: 700, color: 'var(--sienna-light)' }}>Founder</span>
+              <span style={{ fontSize: 11, color: 'var(--ink-400)', fontWeight: 400 }}>Full access</span>
+            </button>
+            <button
+              onClick={() => quickLogin('team')}
+              className="btn btn-ghost press-effect"
+              style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '12px 14px' }}
+              id="demo-team-login"
+            >
+              <span style={{ fontWeight: 700, color: 'var(--cream-muted)' }}>Team Member</span>
+              <span style={{ fontSize: 11, color: 'var(--ink-400)', fontWeight: 400 }}>Input only</span>
+            </button>
+          </div>
+          <p style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 10, textAlign: 'center' }}>
+            Password: <span style={{ color: 'var(--ink-400)', fontWeight: 600 }}>demo123</span>
+          </p>
         </div>
       </div>
     </div>
