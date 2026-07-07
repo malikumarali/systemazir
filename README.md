@@ -6,7 +6,7 @@
 
 ### 1. Install Node.js
 
-Download and install Node.js LTS from [nodejs.org](https://nodejs.org). Then restart your terminal.
+Download and install Node.js LTS from [nodejs.org](https://nodejs.org).
 
 ### 2. Install Dependencies
 
@@ -14,21 +14,23 @@ Download and install Node.js LTS from [nodejs.org](https://nodejs.org). Then res
 npm install
 ```
 
-### 3. Configure Environment (Optional — for Supabase)
+### 3. Configure Environment
 
-Copy `.env.local.example` to `.env.local` and fill in your Supabase credentials:
+Copy `.env.local.example` to `.env.local` and fill in your Supabase credentials and NVIDIA key:
 
 ```bash
-copy .env.local.example .env.local
+cp .env.local.example .env.local
 ```
 
 Then edit `.env.local`:
-```
+```env
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+NVIDIA_API_KEY=your-nvidia-key-here
 ```
 
-> **Without Supabase credentials**, the app runs in **Demo Mode** with local in-memory state. All features work — data just resets on page refresh.
+> **Security Note**: Never commit your `.env.local` file to git. Use `.env.local.example` as a template for other team members.
 
 ### 4. Run the Development Server
 
@@ -40,14 +42,41 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## Demo Accounts
+## 🚀 Live Deployment (Vercel CLI)
 
-| Role | Email | Password |
-|------|-------|----------|
-| Founder | `founder@agencyos.com` | `demo123` |
-| Team Member | `team@agencyos.com` | `demo123` |
+To deploy this project to the internet using Vercel:
 
-Or just click the **Quick Demo Access** buttons on the login page.
+1. **Install Vercel CLI**:
+   ```bash
+   npm install -g vercel
+   ```
+2. **Login to your Vercel account**:
+   ```bash
+   vercel login
+   ```
+3. **Deploy from project root**:
+   ```bash
+   vercel
+   ```
+4. **Add environment variables**:
+   ```bash
+   vercel env add NEXT_PUBLIC_SUPABASE_URL
+   vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY
+   vercel env add SUPABASE_SERVICE_ROLE_KEY
+   vercel env add NVIDIA_API_KEY
+   ```
+5. **Promote to Production**:
+   ```bash
+   vercel --prod
+   ```
+
+---
+
+## 👥 Authentication & Team Setup
+
+1. **Founder Setup**: Click **"Register initial Founder Account"** on the login page to create your first founder admin.
+2. **Team Member Setup**: Log in as a Founder, navigate to **Settings**, and use the **"Add Team Member"** form. This securely registers your teammate as a `team_member` inside Supabase Auth.
+3. **Team Login**: Your teammate can then log in using the email and password you created for them. They will have input-only access (leads & matrix entries only, no settings or dashboard).
 
 ---
 

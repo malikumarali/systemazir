@@ -3,39 +3,58 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
-import { Eye, EyeOff, Target, TrendingUp, BarChart3, ArrowRight, ShieldCheck } from 'lucide-react'
+import { Eye, EyeOff, Target, TrendingUp, BarChart3, ArrowRight, ShieldCheck, UserPlus, LogIn } from 'lucide-react'
 
 export default function LoginPage() {
   const { login } = useAuth()
   const router = useRouter()
+  const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
     setLoading(true)
-    const result = await login(email, password)
-    setLoading(false)
-    if (result.error) {
-      setError(result.error)
-    } else {
-      const stored = localStorage.getItem('agencyos_user')
-      const user = stored ? JSON.parse(stored) : null
-      router.replace(user?.role === 'founder' ? '/dashboard' : '/leads')
-    }
-  }
 
-  const quickLogin = async (role: 'founder' | 'team') => {
-    const e = role === 'founder' ? 'founder@agencyos.com' : 'team@agencyos.com'
-    setEmail(e)
-    setPassword('demo123')
-    const result = await login(e, 'demo123')
-    if (!result.error) {
-      router.replace(role === 'founder' ? '/dashboard' : '/leads')
+    if (isSignUp) {
+      // Sign Up Founder
+      try {
+        const res = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, name }),
+        })
+        const json = await res.json()
+        setLoading(false)
+        if (!res.ok || !json.ok) {
+          setError(json.error || 'Failed to create founder account')
+        } else {
+          setSuccess('Founder account created successfully! You can now log in.')
+          setIsSignUp(false)
+          setPassword('')
+        }
+      } catch (err: any) {
+        setLoading(false)
+        setError(err.message || 'An error occurred during registration')
+      }
+    } else {
+      // Sign In
+      const result = await login(email, password)
+      setLoading(false)
+      if (result.error) {
+        setError(result.error)
+      } else {
+        const stored = localStorage.getItem('agencyos_user')
+        const user = stored ? JSON.parse(stored) : null
+        router.replace(user?.role === 'founder' ? '/dashboard' : '/leads')
+      }
     }
   }
 
@@ -81,7 +100,7 @@ export default function LoginPage() {
             </span>
           </div>
 
-          {/* Main statement — deliberately off-center, large */}
+          {/* Main statement */}
           <div style={{ paddingTop: '15vh', paddingBottom: '4vh' }}>
             <p style={{
               fontFamily: 'var(--font-sans)',
@@ -162,7 +181,7 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* ---- Right: Login form ---- */}
+      {/* ---- Right: Login / Registration Form ---- */}
       <div className="flex-1 flex flex-col justify-center px-8 py-12" style={{ maxWidth: 520, margin: '0 auto' }}>
 
         {/* Mobile wordmark */}
@@ -174,19 +193,36 @@ export default function LoginPage() {
         </div>
 
         {/* Form header */}
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 32 }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--cream)', lineHeight: 1.1, marginBottom: 8 }}>
-            Sign in
+            {isSignUp ? 'Create Founder Account' : 'Sign in'}
           </h2>
           <p style={{ fontSize: 13, color: 'var(--ink-300)', fontWeight: 400 }}>
-            Access your agency command center
+            {isSignUp ? 'Set up your agency command center' : 'Access your agency command center'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {isSignUp && (
+            <div>
+              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+                Full Name
+              </label>
+              <input
+                type="text"
+                className="field"
+                placeholder="Alex Founder"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                required
+                id="signup-name"
+              />
+            </div>
+          )}
+
           <div>
             <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
-              Email
+              Email Address
             </label>
             <input
               type="email"
@@ -245,6 +281,20 @@ export default function LoginPage() {
             </div>
           )}
 
+          {success && (
+            <div style={{
+              padding: '10px 14px',
+              background: 'rgba(74,158,107,0.08)',
+              border: '1px solid rgba(74,158,107,0.3)',
+              borderLeft: '2px solid #4a9e6b',
+              borderRadius: 2,
+              fontSize: 13,
+              color: '#6bc98a',
+            }}>
+              {success}
+            </div>
+          )}
+
           <button
             type="submit"
             disabled={loading}
@@ -255,46 +305,51 @@ export default function LoginPage() {
             {loading ? (
               <>
                 <div className="spinner" style={{ width: 14, height: 14 }} />
-                Signing in…
+                Processing…
               </>
             ) : (
               <>
-                Sign In
+                {isSignUp ? 'Create Founder Account' : 'Sign In'}
                 <ArrowRight size={14} strokeWidth={2} />
               </>
             )}
           </button>
         </form>
 
-        {/* Demo access */}
-        <div style={{ marginTop: 40, paddingTop: 24, borderTop: '1px solid var(--ink-600)' }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-400)', marginBottom: 12 }}>
-            Demo Access
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-            <button
-              onClick={() => quickLogin('founder')}
-              className="btn btn-ghost press-effect"
-              style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '12px 14px' }}
-              id="demo-founder-login"
-            >
-              <span style={{ fontWeight: 700, color: 'var(--sienna-light)' }}>Founder</span>
-              <span style={{ fontSize: 11, color: 'var(--ink-400)', fontWeight: 400 }}>Full access</span>
-            </button>
-            <button
-              onClick={() => quickLogin('team')}
-              className="btn btn-ghost press-effect"
-              style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 2, padding: '12px 14px' }}
-              id="demo-team-login"
-            >
-              <span style={{ fontWeight: 700, color: 'var(--cream-muted)' }}>Team Member</span>
-              <span style={{ fontSize: 11, color: 'var(--ink-400)', fontWeight: 400 }}>Input only</span>
-            </button>
-          </div>
-          <p style={{ fontSize: 11, color: 'var(--ink-500)', marginTop: 10, textAlign: 'center' }}>
-            Password: <span style={{ color: 'var(--ink-400)', fontWeight: 600 }}>demo123</span>
-          </p>
+        {/* Toggle between Login and Registration */}
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <button
+            onClick={() => {
+              setIsSignUp(!isSignUp)
+              setError('')
+              setSuccess('')
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--sienna-light)',
+              fontSize: 13,
+              fontWeight: 500,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+            }}
+          >
+            {isSignUp ? (
+              <>
+                <LogIn size={14} />
+                Already have an account? Sign In
+              </>
+            ) : (
+              <>
+                <UserPlus size={14} />
+                Register initial Founder Account
+              </>
+            )}
+          </button>
         </div>
+
       </div>
     </div>
   )
