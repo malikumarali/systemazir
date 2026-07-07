@@ -11,7 +11,7 @@ import {
   Tooltip, ResponsiveContainer, Legend, ComposedChart, Bar, Line
 } from 'recharts'
 import clsx from 'clsx'
-import { TrendingUp, DollarSign, BarChart3, ArrowUpDown, Info } from 'lucide-react'
+import { TrendingUp, DollarSign, BarChart3, ArrowUpDown, Info, Flame, LineChart, Trophy } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 type DashTab = 'roi' | 'revenue' | 'niche'
@@ -187,19 +187,19 @@ export default function DashboardPage() {
       {/* Tab navigation */}
       <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: 'rgba(21, 30, 56, 0.8)' }}>
         {[
-          { id: 'roi' as DashTab, label: '🔥 ROI Matrix' },
-          { id: 'revenue' as DashTab, label: '📈 Revenue vs Spend' },
-          { id: 'niche' as DashTab, label: '🏆 Niche Ranking' },
-        ].map(({ id, label }) => (
+          { id: 'roi' as DashTab, label: 'ROI Matrix', icon: Flame },
+          { id: 'revenue' as DashTab, label: 'Revenue vs Spend', icon: LineChart },
+          { id: 'niche' as DashTab, label: 'Niche Ranking', icon: Trophy },
+        ].map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setTab(id)}
             className={clsx(
-              'px-5 py-2.5 rounded-lg text-sm font-medium transition-all',
+              'px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2',
               tab === id ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
             )}
-            id={`tab-${id}`}
           >
+            <Icon size={16} />
             {label}
           </button>
         ))}
@@ -387,10 +387,10 @@ export default function DashboardPage() {
               <ResponsiveContainer width="100%" height={380}>
                 <ComposedChart data={channelData} margin={{ top: 10, right: 60, left: 20, bottom: 10 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(45, 58, 94, 0.4)" />
-                  <XAxis dataKey="channel" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false} />
-                  <YAxis yAxisId="left" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false}
+                  <XAxis dataKey="channel" tick={{ fill: '#9ca3af', fontSize: 15 }} axisLine={false} tickLine={false} />
+                  <YAxis yAxisId="left" tick={{ fill: '#9ca3af', fontSize: 15 }} axisLine={false} tickLine={false}
                     tickFormatter={v => `$${(v / 1000).toFixed(0)}K`} />
-                  <YAxis yAxisId="right" orientation="right" tick={{ fill: '#9ca3af', fontSize: 12 }} axisLine={false} tickLine={false}
+                  <YAxis yAxisId="right" orientation="right" tick={{ fill: '#9ca3af', fontSize: 15 }} axisLine={false} tickLine={false}
                     tickFormatter={v => `${v.toFixed(1)}x`} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend wrapperStyle={{ color: '#9ca3af', fontSize: '12px' }} />

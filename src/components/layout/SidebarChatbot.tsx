@@ -168,8 +168,8 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
           <Cpu size={13} color="var(--sienna)" strokeWidth={1.5} />
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 13, color: 'var(--cream)' }}>Nemotron Agent</div>
-          <div style={{ fontSize: 10, color: 'var(--ink-400)' }}>nvidia/nemotron-3-super-120b</div>
+          <div style={{ fontWeight: 700, fontSize: 17, color: 'var(--cream)' }}>Nemotron Agent</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-400)' }}>nvidia/nemotron-3-super-120b</div>
         </div>
         <div style={{ display: 'flex', gap: 4 }}>
           {messages.length > 0 && (
@@ -215,7 +215,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
               <div style={{ fontFamily: 'var(--font-display)', fontSize: '1.1rem', color: 'var(--cream)', marginBottom: 6 }}>
                 Ask the agent
               </div>
-              <p style={{ fontSize: 12, color: 'var(--ink-400)', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 15, color: 'var(--ink-400)', lineHeight: 1.5 }}>
                 Get insights about your leads, ROI, campaign performance, and more.
               </p>
             </div>
@@ -231,7 +231,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                     border: '1px solid var(--ink-600)',
                     borderLeft: '2px solid var(--ink-500)',
                     borderRadius: 2,
-                    fontSize: 12,
+                    fontSize: 15,
                     color: 'var(--ink-200)',
                     cursor: 'pointer',
                     transition: 'border-color 0.1s ease, color 0.1s ease',
@@ -263,7 +263,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                   style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     background: 'none', border: 'none', cursor: 'pointer',
-                    fontSize: 10, fontWeight: 600, letterSpacing: '0.08em',
+                    fontSize: 13, fontWeight: 600, letterSpacing: '0.08em',
                     textTransform: 'uppercase', color: 'var(--ink-400)',
                     padding: '4px 0',
                   }}
@@ -278,7 +278,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                     borderLeft: '2px solid var(--ink-500)',
                     borderRadius: 2,
                     padding: '10px 12px',
-                    fontSize: 11,
+                    fontSize: 14,
                     color: 'var(--ink-300)',
                     lineHeight: 1.6,
                     maxHeight: 200,
@@ -301,7 +301,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                   borderRadius: '2px 2px 0 2px',
                   padding: '9px 12px',
                   maxWidth: '85%',
-                  fontSize: 13,
+                  fontSize: 17,
                   lineHeight: 1.5,
                   fontWeight: 400,
                 }}>
@@ -318,7 +318,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                   border: '1px solid var(--ink-600)',
                   borderRadius: '2px 2px 2px 0',
                   padding: '10px 12px',
-                  fontSize: 13,
+                  fontSize: 17,
                   color: msg.content ? 'var(--ink-100)' : 'var(--ink-400)',
                   lineHeight: 1.65,
                   whiteSpace: 'pre-wrap',
@@ -327,11 +327,11 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
                   {msg.content || (loading ? (
                     <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                       <div className="spinner" style={{ width: 12, height: 12 }} />
-                      <span style={{ fontSize: 11 }}>Thinking…</span>
+                      <span style={{ fontSize: 14 }}>Thinking…</span>
                     </span>
                   ) : '—')}
                 </div>
-                <div style={{ fontSize: 10, color: 'var(--ink-500)', marginTop: 4 }}>
+                <div style={{ fontSize: 13, color: 'var(--ink-500)', marginTop: 4 }}>
                   {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
@@ -373,7 +373,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
               border: '1px solid var(--ink-600)',
               borderRadius: 2,
               padding: '9px 12px',
-              fontSize: 13,
+              fontSize: 17,
               color: 'var(--cream)',
               outline: 'none',
               resize: 'none',
@@ -396,7 +396,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
             )}
           </button>
         </div>
-        <div style={{ fontSize: 10, color: 'var(--ink-500)', marginTop: 6, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: 'var(--ink-500)', marginTop: 6, textAlign: 'center' }}>
           Shift+Enter for newline · Enter to send
         </div>
       </div>

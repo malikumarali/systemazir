@@ -53,14 +53,14 @@ export default function Sidebar() {
               <div style={{
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 700,
-                fontSize: 12,
+                fontSize: 15,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: 'var(--cream)',
               }}>
                 Agency OS
               </div>
-              <div style={{ fontSize: 10, color: 'var(--ink-400)', marginTop: 1 }}>
+              <div style={{ fontSize: 13, color: 'var(--ink-400)', marginTop: 1 }}>
                 Performance workspace
               </div>
             </div>
@@ -71,7 +71,7 @@ export default function Sidebar() {
         <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 1 }}>
           <div style={{
             fontFamily: 'var(--font-sans)',
-            fontSize: 10,
+            fontSize: 13,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
@@ -117,13 +117,13 @@ export default function Sidebar() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 13, fontWeight: 500,
+                    fontSize: 17, fontWeight: 500,
                     color: active ? 'var(--cream)' : 'var(--ink-200)',
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                   }}>
                     {label}
                   </div>
-                  <div style={{ fontSize: 10, color: 'var(--ink-400)', marginTop: 1 }}>{description}</div>
+                  <div style={{ fontSize: 13, color: 'var(--ink-400)', marginTop: 1 }}>{description}</div>
                 </div>
                 {active && <ChevronRight size={12} color="var(--sienna)" strokeWidth={2} />}
               </Link>
@@ -168,10 +168,10 @@ export default function Sidebar() {
               <Sparkles size={13} color={chatbotOpen ? 'var(--sienna-light)' : 'var(--ink-300)'} strokeWidth={1.5} />
             </div>
             <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--ink-200)' }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--ink-200)' }}>
                 Nemotron Agent
               </div>
-              <div style={{ fontSize: 10, color: 'var(--ink-400)' }}>Ask AI assistant</div>
+              <div style={{ fontSize: 13, color: 'var(--ink-400)' }}>Ask AI assistant</div>
             </div>
           </button>
         </div>
@@ -204,17 +204,17 @@ export default function Sidebar() {
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               fontFamily: 'var(--font-display)',
-              fontSize: 13,
+              fontSize: 17,
               color: 'var(--cream)',
               fontWeight: 400,
             }}>
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--ink-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.name}
               </div>
-              <div style={{ fontSize: 10, color: 'var(--ink-400)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
+              <div style={{ fontSize: 13, color: 'var(--ink-400)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
             </div>
             <LogOut size={12} color="var(--ink-400)" strokeWidth={1.5} />
           </button>

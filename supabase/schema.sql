@@ -42,17 +42,32 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
+-- Create a recursion-free helper function to check if a user is a founder.
+-- SECURITY DEFINER bypasses RLS for the query inside, preventing circular reference.
+CREATE OR REPLACE FUNCTION public.is_founder(user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = user_id AND role = 'founder'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
 -- Trigger function to block client-side modifications of the role column
 CREATE OR REPLACE FUNCTION public.check_profile_role_update()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- If request originates from client session (auth.uid() is not null) and role is changed
-  IF (auth.uid() IS NOT NULL) AND (NEW.role IS DISTINCT FROM OLD.role) THEN
+  -- If role is modified, check if caller is service_role.
+  -- If request is from client session (auth.role() is not null/empty) and not service_role, block.
+  IF (NEW.role IS DISTINCT FROM OLD.role) 
+     AND (auth.role() IS NOT NULL AND auth.role() <> '') 
+     AND (auth.role() <> 'service_role') THEN
     RAISE EXCEPTION 'Modifying the role column is restricted to admin keys only.';
   END IF;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Create the trigger for profile update
 CREATE OR REPLACE TRIGGER on_profile_role_update
@@ -178,13 +193,13 @@ ALTER TABLE public.outbound_entries ENABLE ROW LEVEL SECURITY;
 
 -- 8. RLS Policies
 
--- Profiles Policies (Recursion-free check via JWT metadata)
+-- Profiles Policies (Recursion-free check via is_founder helper function)
 CREATE POLICY "Allow view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Allow founders to view all profiles" ON public.profiles
   FOR SELECT USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 CREATE POLICY "Allow update own profile" ON public.profiles
@@ -193,13 +208,13 @@ CREATE POLICY "Allow update own profile" ON public.profiles
 -- Settings Policies (Founders only)
 CREATE POLICY "Allow founders to manage settings" ON public.settings
   FOR ALL USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 -- Leads Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select leads" ON public.leads
   FOR SELECT USING (
-    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
+    public.is_founder(auth.uid())
     OR (auth.uid() = user_id)
   );
 
@@ -208,18 +223,18 @@ CREATE POLICY "Allow insert leads" ON public.leads
 
 CREATE POLICY "Allow update leads" ON public.leads
   FOR UPDATE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 CREATE POLICY "Allow delete leads" ON public.leads
   FOR DELETE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 -- Inbound entries Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select inbound" ON public.inbound_entries
   FOR SELECT USING (
-    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
+    public.is_founder(auth.uid())
     OR (auth.uid() = user_id)
   );
 
@@ -228,18 +243,19 @@ CREATE POLICY "Allow insert inbound" ON public.inbound_entries
 
 CREATE POLICY "Allow update inbound" ON public.inbound_entries
   FOR UPDATE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
+-- Allow delete inbound" ON public.inbound_entries
 CREATE POLICY "Allow delete inbound" ON public.inbound_entries
   FOR DELETE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 -- Outbound entries Policies (Founders see all; Team members see only their own)
 CREATE POLICY "Allow select outbound" ON public.outbound_entries
   FOR SELECT USING (
-    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'founder')
+    public.is_founder(auth.uid())
     OR (auth.uid() = user_id)
   );
 
@@ -248,12 +264,12 @@ CREATE POLICY "Allow insert outbound" ON public.outbound_entries
 
 CREATE POLICY "Allow update outbound" ON public.outbound_entries
   FOR UPDATE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 CREATE POLICY "Allow delete outbound" ON public.outbound_entries
   FOR DELETE USING (
-    (auth.jwt() -> 'user_metadata' ->> 'role') = 'founder'
+    public.is_founder(auth.uid())
   );
 
 -- 9. Performance Indexes

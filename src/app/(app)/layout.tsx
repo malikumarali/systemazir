@@ -38,7 +38,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             to   { transform: scaleY(1); opacity: 1; }
           }
         `}</style>
-        <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-400)' }}>
+        <span style={{ fontSize: 14, fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--ink-400)' }}>
           Loading
         </span>
       </div>

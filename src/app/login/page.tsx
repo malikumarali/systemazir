@@ -91,7 +91,7 @@ export default function LoginPage() {
             <span style={{
               fontFamily: 'var(--font-sans)',
               fontWeight: 700,
-              fontSize: 13,
+              fontSize: 17,
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: 'var(--cream-muted)',
@@ -104,7 +104,7 @@ export default function LoginPage() {
           <div style={{ paddingTop: '15vh', paddingBottom: '4vh' }}>
             <p style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: 11,
+              fontSize: 14,
               fontWeight: 600,
               letterSpacing: '0.15em',
               textTransform: 'uppercase',
@@ -125,7 +125,7 @@ export default function LoginPage() {
             </h1>
             <p style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: 15,
+              fontSize: 19,
               lineHeight: 1.7,
               color: 'var(--ink-300)',
               marginTop: 20,
@@ -160,8 +160,8 @@ export default function LoginPage() {
                   <Icon size={14} color="var(--sienna)" strokeWidth={1.5} />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: 13, color: 'var(--cream)', marginBottom: 2 }}>{label}</div>
-                  <div style={{ fontSize: 12, color: 'var(--ink-300)', lineHeight: 1.5 }}>{desc}</div>
+                  <div style={{ fontWeight: 600, fontSize: 17, color: 'var(--cream)', marginBottom: 2 }}>{label}</div>
+                  <div style={{ fontSize: 15, color: 'var(--ink-300)', lineHeight: 1.5 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -175,7 +175,7 @@ export default function LoginPage() {
           display: 'flex', alignItems: 'center', gap: 8,
         }}>
           <ShieldCheck size={13} color="var(--ink-400)" strokeWidth={1.5} />
-          <span style={{ fontSize: 11, color: 'var(--ink-400)' }}>
+          <span style={{ fontSize: 14, color: 'var(--ink-400)' }}>
             Agency OS v1.0 · Session-secured · Role-based access
           </span>
         </div>
@@ -187,7 +187,7 @@ export default function LoginPage() {
         {/* Mobile wordmark */}
         <div className="flex items-center gap-3 mb-10 lg:hidden">
           <div style={{ width: 8, height: 8, background: 'var(--sienna)', borderRadius: 1 }} />
-          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--cream-muted)' }}>
+          <span style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 15, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--cream-muted)' }}>
             Agency OS
           </span>
         </div>
@@ -197,7 +197,7 @@ export default function LoginPage() {
           <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2rem', color: 'var(--cream)', lineHeight: 1.1, marginBottom: 8 }}>
             {isSignUp ? 'Create Founder Account' : 'Sign in'}
           </h2>
-          <p style={{ fontSize: 13, color: 'var(--ink-300)', fontWeight: 400 }}>
+          <p style={{ fontSize: 17, color: 'var(--ink-300)', fontWeight: 400 }}>
             {isSignUp ? 'Set up your agency command center' : 'Access your agency command center'}
           </p>
         </div>
@@ -205,7 +205,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {isSignUp && (
             <div>
-              <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+              <label style={{ display: 'block', fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
                 Full Name
               </label>
               <input
@@ -221,7 +221,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
               Email Address
             </label>
             <input
@@ -237,7 +237,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
+            <label style={{ display: 'block', fontSize: 14, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--ink-300)', marginBottom: 6 }}>
               Password
             </label>
             <div style={{ position: 'relative' }}>
@@ -274,7 +274,7 @@ export default function LoginPage() {
               border: '1px solid rgba(217,79,79,0.3)',
               borderLeft: '2px solid #d94f4f',
               borderRadius: 2,
-              fontSize: 13,
+              fontSize: 17,
               color: '#e88080',
             }}>
               {error}
@@ -288,7 +288,7 @@ export default function LoginPage() {
               border: '1px solid rgba(74,158,107,0.3)',
               borderLeft: '2px solid #4a9e6b',
               borderRadius: 2,
-              fontSize: 13,
+              fontSize: 17,
               color: '#6bc98a',
             }}>
               {success}
@@ -299,7 +299,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="btn btn-primary press-effect"
-            style={{ marginTop: 4, padding: '12px 20px', fontSize: 14 }}
+            style={{ marginTop: 4, padding: '12px 20px', fontSize: 18 }}
             id="login-submit"
           >
             {loading ? (
@@ -329,7 +329,7 @@ export default function LoginPage() {
               border: 'none',
               cursor: 'pointer',
               color: 'var(--sienna-light)',
-              fontSize: 13,
+              fontSize: 17,
               fontWeight: 500,
               display: 'inline-flex',
               alignItems: 'center',

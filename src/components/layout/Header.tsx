@@ -46,7 +46,7 @@ export default function Header() {
             {pageInfo.title}
           </h1>
           {pageInfo.subtitle && (
-            <p style={{ fontSize: 11, color: 'var(--ink-400)', marginTop: 1 }}>
+            <p style={{ fontSize: 14, color: 'var(--ink-400)', marginTop: 1 }}>
               {pageInfo.subtitle}
             </p>
           )}
@@ -61,7 +61,7 @@ export default function Header() {
           padding: '5px 10px',
           border: '1px solid var(--ink-600)',
           borderRadius: 2,
-          fontSize: 11,
+          fontSize: 14,
           color: 'var(--ink-400)',
           marginRight: 6,
         }}>
@@ -84,7 +84,7 @@ export default function Header() {
               id={`currency-toggle-${opt.toLowerCase()}`}
               style={{
                 padding: '5px 9px',
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: 600,
                 background: settings.currencyDisplay === opt ? 'var(--sienna)' : 'transparent',
                 color: settings.currencyDisplay === opt ? 'var(--cream)' : 'var(--ink-400)',
