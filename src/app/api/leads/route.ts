@@ -29,12 +29,9 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(parseInt(searchParams.get('limit') || '200'), 500)
   const offset = parseInt(searchParams.get('offset') || '0')
 
-  // Demo mode
+  // Demo mode — all roles see only their own data (no cross-account leakage)
   if (!isSupabaseConfigured) {
-    let leads = [...DemoStore.getLeads()]
-    if (authedUser.role === 'team_member') {
-      leads = leads.filter(l => l.userId === authedUser.id)
-    }
+    let leads = [...DemoStore.getLeads()].filter(l => l.userId === authedUser.id)
     if (source) leads = leads.filter(l => l.leadSource === source)
     if (niche) leads = leads.filter(l => l.niche === niche)
     if (status) leads = leads.filter(l => l.dealStatus === status)

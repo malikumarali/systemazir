@@ -125,8 +125,8 @@ export default function SettingsPage() {
                 className="field pr-16"
                 value={rateInput}
                 onChange={e => setRateInput(e.target.value)}
-                min="1"
-                step="1"
+                onFocus={e => e.target.select()}
+                onWheel={e => e.currentTarget.blur()}
                 id="exchange-rate-input"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm" style={{ color: 'var(--ink-400)' }}>PKR</span>

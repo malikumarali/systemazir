@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
 import { User } from '@/lib/types'
 
 interface AuthContextValue {
@@ -10,6 +10,8 @@ interface AuthContextValue {
   logout: () => void
   isFounder: boolean
   isTeamMember: boolean
+  // Allows DataContext to register its clearData fn with AuthContext
+  registerClearData: (fn: () => void) => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -17,6 +19,11 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const clearDataRef = useRef<(() => void) | null>(null)
+
+  const registerClearData = (fn: () => void) => {
+    clearDataRef.current = fn
+  }
 
   useEffect(() => {
     const storedUser = localStorage.getItem('agencyos_user')
@@ -82,6 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
+    // Clear data synchronously first — prevents stale state showing on next login
+    clearDataRef.current?.()
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
     } catch {}
@@ -99,6 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         logout,
         isFounder: user?.role === 'founder',
         isTeamMember: user?.role === 'team_member',
+        registerClearData,
       }}
     >
       {children}

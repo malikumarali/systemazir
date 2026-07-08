@@ -25,8 +25,7 @@ export async function GET(req: NextRequest) {
   const month = searchParams.get('month') || undefined
 
   if (!isSupabaseConfigured) {
-    let entries = [...DemoStore.getInbound()]
-    if (authedUser.role === 'team_member') entries = entries.filter(e => e.userId === authedUser.id)
+    let entries = [...DemoStore.getInbound()].filter(e => e.userId === authedUser.id)
     if (channel) entries = entries.filter(e => e.channel === channel)
     if (month) entries = entries.filter(e => e.month === month)
     return ok({ entries, total: entries.length })

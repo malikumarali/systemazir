@@ -46,6 +46,7 @@ export default function NewLeadPage() {
   })
   const [errors, setErrors] = useState<Partial<FormData>>({})
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   const pkrPreview = form.dealValueUsd
     ? usdToPkr(parseFloat(form.dealValueUsd) || 0, settings.exchangeRate)
@@ -65,6 +66,7 @@ export default function NewLeadPage() {
     e.preventDefault()
     if (!validate()) return
     setSaving(true)
+    setSaveError('')
 
     const niche = form.niche === 'Other' ? form.customNiche : form.niche
     const dealValueUsd = parseFloat(form.dealValueUsd) || 0
@@ -85,8 +87,12 @@ export default function NewLeadPage() {
       createdAt: new Date().toISOString(),
     }
 
-    addLead(lead)
+    const result = await addLead(lead)
     setSaving(false)
+    if (result.error) {
+      setSaveError(result.error)
+      return
+    }
     router.push('/leads')
   }
 
@@ -209,10 +215,10 @@ export default function NewLeadPage() {
                   type="number"
                   className={`input-field ${errors.dealValueUsd ? 'error' : ''}`}
                   placeholder="0"
-                  min="0"
-                  step="0.01"
                   value={form.dealValueUsd}
                   onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))}
+                  onFocus={e => e.target.select()}
+                  onWheel={e => e.currentTarget.blur()}
                   id="lead-deal-value"
                 />
               </div>,
@@ -227,10 +233,10 @@ export default function NewLeadPage() {
                   type="number"
                   className="input-field"
                   placeholder="0 (if applicable)"
-                  min="0"
-                  step="0.01"
                   value={form.monthlyRetainer}
                   onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))}
+                  onFocus={e => e.target.select()}
+                  onWheel={e => e.currentTarget.blur()}
                   id="lead-retainer"
                 />
               </div>
@@ -267,6 +273,9 @@ export default function NewLeadPage() {
               {saving ? 'Saving...' : 'Save Lead'}
             </button>
           </div>
+          {saveError && (
+            <p className="text-red-400 text-sm text-center mt-2">{saveError}</p>
+          )}
         </form>
       </div>
     </div>

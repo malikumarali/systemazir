@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ok, err, sanitizeString, checkRateLimit, getClientIp, withSecurityHeaders } from '@/lib/api-helpers'
 import { isSupabaseConfigured, getSupabaseClient } from '@/lib/supabase'
-import { DEMO_USERS } from '@/lib/mockData'
+import { DemoStore } from '@/lib/demo-store'
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req)
@@ -26,15 +26,12 @@ export async function POST(req: NextRequest) {
     return err('Email and password are required')
   }
 
-  // ---------------------------------------------------------------
   // Demo Mode fallback (no Supabase configured)
-  // ---------------------------------------------------------------
   if (!isSupabaseConfigured) {
-    const demoUser = DEMO_USERS.find(u => u.email.toLowerCase() === email)
+    const demoUser = DemoStore.findUserByEmail(email)
     if (!demoUser) return err('No account found with this email', 401)
     if (password !== 'demo123') return err('Invalid password. Use demo123 for demo accounts.', 401)
 
-    // Return sanitized user — never return passwords
     const response = ok({
       user: {
         id: demoUser.id,
@@ -42,7 +39,7 @@ export async function POST(req: NextRequest) {
         name: demoUser.name,
         role: demoUser.role,
       },
-      token: null, // Demo mode has no token
+      token: null,
       mode: 'demo',
     })
     return response

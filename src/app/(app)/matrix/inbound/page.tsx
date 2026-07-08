@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { useData } from '@/context/DataContext'
 import { useSettings } from '@/context/SettingsContext'
 import { useAuth } from '@/context/AuthContext'
 import { InboundEntry, InboundChannel } from '@/lib/types'
 import { calcInbound, InboundInputs } from '@/lib/calculations'
-import { formatCurrency, usdToPkr, formatUsd, formatPkr, getPLColorClass } from '@/lib/currency'
-import { Save, RefreshCw, Plus, ChevronDown, ChevronUp } from 'lucide-react'
+import { formatCurrency, usdToPkr, formatUsd, getPLColorClass } from '@/lib/currency'
+import { Save, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
 import ExcelUpload from '@/components/shared/ExcelUpload'
 import clsx from 'clsx'
 
@@ -54,15 +54,83 @@ function initForm(channel: InboundChannel) {
   }
 }
 
+type InboundForm = ReturnType<typeof initForm>
+type InboundCalc = ReturnType<typeof calcInbound> | null
+
+// ─── EXTRACTED to module level so React never remounts it on re-render ───────
+function InboundInputRow({
+  label, fieldKey, isAuto = false, suffix = '', prefix = '$',
+  hint = '', required = false, form, setForm, calc,
+}: {
+  label: string
+  fieldKey: string
+  isAuto?: boolean
+  suffix?: string
+  prefix?: string
+  hint?: string
+  required?: boolean
+  form: InboundForm
+  setForm: Dispatch<SetStateAction<InboundForm>>
+  calc: InboundCalc
+}) {
+  const autoValue = calc ? (calc as unknown as Record<string, number>)[fieldKey] ?? 0 : 0
+  const formValue = (form as unknown as Record<string, string>)[fieldKey] ?? ''
+
+  return (
+    <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
+      <label className="text-gray-700 text-sm flex items-center gap-1">
+        {label}
+        {required && <span className="text-red-400">*</span>}
+        {isAuto && (
+          <span className="badge badge-blue text-[10px] ml-1">Auto</span>
+        )}
+      </label>
+      <div className="relative">
+        {isAuto ? (
+          <div className="input-auto">
+            {prefix && <span className="text-gray-500 mr-1">{prefix}</span>}
+            {autoValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+            {suffix && <span className="text-gray-500 ml-1">{suffix}</span>}
+          </div>
+        ) : (
+          <div className={`input-prefix-wrap ${suffix ? 'has-suffix' : ''}`}>
+            {prefix && (
+              <span className="prefix-symbol">{prefix}</span>
+            )}
+            <input
+              type="number"
+              className="input-field"
+              value={formValue}
+              onChange={e => setForm(p => ({ ...p, [fieldKey]: e.target.value }))}
+              onFocus={e => e.target.select()}
+              onWheel={e => e.currentTarget.blur()}
+              step="any"
+              id={`inbound-${fieldKey}`}
+            />
+            {suffix && (
+              <span className="suffix-symbol">{suffix}</span>
+            )}
+          </div>
+        )}
+        {hint && (
+          <p className="text-gray-600 text-xs mt-0.5">{hint}</p>
+        )}
+      </div>
+    </div>
+  )
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function InboundMatrixPage() {
   const { inboundEntries, addInbound } = useData()
   const { settings } = useSettings()
   const { user } = useAuth()
   const [channel, setChannel] = useState<InboundChannel>('Meta Ads')
-  const [form, setForm] = useState(initForm('Meta Ads'))
-  const [calc, setCalc] = useState<ReturnType<typeof calcInbound> | null>(null)
+  const [form, setForm] = useState<InboundForm>(initForm('Meta Ads'))
+  const [calc, setCalc] = useState<InboundCalc>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
 
   useEffect(() => {
@@ -87,9 +155,10 @@ export default function InboundMatrixPage() {
     setForm(initForm(ch))
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!calc || !form.budgetUsd) return
     setSaving(true)
+    setSaveError('')
     const n = parseFloat
 
     const entry: InboundEntry = {
@@ -112,8 +181,12 @@ export default function InboundMatrixPage() {
       createdAt: new Date().toISOString(),
     }
 
-    addInbound(entry)
+    const result = await addInbound(entry)
     setSaving(false)
+    if (result.error) {
+      setSaveError(result.error)
+      return
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
@@ -131,63 +204,8 @@ export default function InboundMatrixPage() {
   const f = (v: number) => formatCurrency(v, settings.currencyDisplay, settings.exchangeRate)
   const fUsd = (v: number) => formatUsd(v)
 
-  const InputRow = ({
-    label, fieldKey, isAuto = false, suffix = '', prefix = '$',
-    hint = '', required = false
-  }: {
-    label: string
-    fieldKey: string
-    isAuto?: boolean
-    suffix?: string
-    prefix?: string
-    hint?: string
-    required?: boolean
-  }) => {
-    const autoValue = calc ? (calc as unknown as Record<string, number>)[fieldKey] ?? 0 : 0
-    const formValue = (form as unknown as Record<string, string>)[fieldKey] ?? ''
-
-    return (
-      <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
-        <label className="text-gray-700 text-sm flex items-center gap-1">
-          {label}
-          {required && <span className="text-red-400">*</span>}
-          {isAuto && (
-            <span className="badge badge-blue text-[10px] ml-1">Auto</span>
-          )}
-        </label>
-        <div className="relative">
-          {isAuto ? (
-            <div className="input-auto">
-              {prefix && <span className="text-gray-500 mr-1">{prefix}</span>}
-              {autoValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
-              {suffix && <span className="text-gray-500 ml-1">{suffix}</span>}
-            </div>
-          ) : (
-            <div className={`input-prefix-wrap ${suffix ? 'has-suffix' : ''}`}>
-              {prefix && (
-                <span className="prefix-symbol">{prefix}</span>
-              )}
-              <input
-                type="number"
-                className="input-field"
-                value={formValue}
-                onChange={e => setForm(p => ({ ...p, [fieldKey]: e.target.value }))}
-                min="0"
-                step="any"
-                id={`inbound-${fieldKey}`}
-              />
-              {suffix && (
-                <span className="suffix-symbol">{suffix}</span>
-              )}
-            </div>
-          )}
-          {hint && (
-            <p className="text-gray-600 text-xs mt-0.5">{hint}</p>
-          )}
-        </div>
-      </div>
-    )
-  }
+  // Shared props passed down to every InboundInputRow
+  const rowProps = { form, setForm, calc }
 
   return (
     <div className="space-y-6">
@@ -243,30 +261,30 @@ export default function InboundMatrixPage() {
           {/* Fields */}
           <div className="space-y-0">
             <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-2">Ad Spend & Traffic</div>
-            <InputRow label="Budget (USD)" fieldKey="budgetUsd" required hint="Total monthly ad budget" />
-            <InputRow label="CPC" fieldKey="cpc" hint={`Default: $${INBOUND_DEFAULTS[channel].cpc}`} />
-            <InputRow label="Clicks" fieldKey="clicks" isAuto />
-            <InputRow label="Conv. Ratio (%)" fieldKey="convRatio" prefix="" suffix="%" hint="% of clicks that become leads" />
-            <InputRow label="Leads" fieldKey="leads" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Budget (USD)" fieldKey="budgetUsd" required hint="Total monthly ad budget" />
+            <InboundInputRow {...rowProps} label="CPC" fieldKey="cpc" hint={`Default: $${INBOUND_DEFAULTS[channel].cpc}`} />
+            <InboundInputRow {...rowProps} label="Clicks" fieldKey="clicks" isAuto />
+            <InboundInputRow {...rowProps} label="Conv. Ratio (%)" fieldKey="convRatio" prefix="" suffix="%" hint="% of clicks that become leads" />
+            <InboundInputRow {...rowProps} label="Leads" fieldKey="leads" isAuto prefix="" />
 
             <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-4 mb-2">Funnel</div>
-            <InputRow label="Appt. Ratio (%)" fieldKey="apptRatio" prefix="" suffix="%" />
-            <InputRow label="Appointments" fieldKey="appointments" isAuto prefix="" />
-            <InputRow label="Show Up Ratio (%)" fieldKey="showUpRatio" prefix="" suffix="%" />
-            <InputRow label="Show Up" fieldKey="showUp" isAuto prefix="" />
-            <InputRow label="Close Ratio (%)" fieldKey="closeRatio" prefix="" suffix="%" />
-            <InputRow label="Closings" fieldKey="closings" isAuto prefix="" />
-            <InputRow label="Followup Ratio (%)" fieldKey="followupRatio" prefix="" suffix="%" />
-            <InputRow label="Followup Closings" fieldKey="followupClosings" isAuto prefix="" />
-            <InputRow label="Total Closings" fieldKey="totalClosings" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Appt. Ratio (%)" fieldKey="apptRatio" prefix="" suffix="%" />
+            <InboundInputRow {...rowProps} label="Appointments" fieldKey="appointments" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Show Up Ratio (%)" fieldKey="showUpRatio" prefix="" suffix="%" />
+            <InboundInputRow {...rowProps} label="Show Up" fieldKey="showUp" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Close Ratio (%)" fieldKey="closeRatio" prefix="" suffix="%" />
+            <InboundInputRow {...rowProps} label="Closings" fieldKey="closings" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Followup Ratio (%)" fieldKey="followupRatio" prefix="" suffix="%" />
+            <InboundInputRow {...rowProps} label="Followup Closings" fieldKey="followupClosings" isAuto prefix="" />
+            <InboundInputRow {...rowProps} label="Total Closings" fieldKey="totalClosings" isAuto prefix="" />
 
             <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-4 mb-2">Revenue</div>
-            <InputRow label="Avg. Ticket Size" fieldKey="avgTicketSize" />
-            <InputRow label="Total Sales" fieldKey="totalSales" isAuto />
-            <InputRow label="Upsell Ratio (%)" fieldKey="upsellRatio" prefix="" suffix="%" />
-            <InputRow label="Upsell Value" fieldKey="upsellValue" />
-            <InputRow label="Upsell Revenue" fieldKey="upsellRevenue" isAuto />
-            <InputRow label="T. Recurring" fieldKey="tRecurring" isAuto />
+            <InboundInputRow {...rowProps} label="Avg. Ticket Size" fieldKey="avgTicketSize" />
+            <InboundInputRow {...rowProps} label="Total Sales" fieldKey="totalSales" isAuto />
+            <InboundInputRow {...rowProps} label="Upsell Ratio (%)" fieldKey="upsellRatio" prefix="" suffix="%" />
+            <InboundInputRow {...rowProps} label="Upsell Value" fieldKey="upsellValue" />
+            <InboundInputRow {...rowProps} label="Upsell Revenue" fieldKey="upsellRevenue" isAuto />
+            <InboundInputRow {...rowProps} label="T. Recurring" fieldKey="tRecurring" isAuto />
           </div>
 
           <button
@@ -281,6 +299,9 @@ export default function InboundMatrixPage() {
           >
             {saved ? <><RefreshCw className="w-4 h-4" />Saved!</> : <><Save className="w-4 h-4" />Save Entry</>}
           </button>
+          {saveError && (
+            <p className="text-red-400 text-xs text-center mt-2">{saveError}</p>
+          )}
         </div>
 
         {/* Live Results Panel */}

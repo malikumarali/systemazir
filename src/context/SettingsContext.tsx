@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { Settings, CurrencyDisplay } from '@/lib/types'
 import { DEFAULT_EXCHANGE_RATE } from '@/lib/currency'
+import { useAuth } from './AuthContext'
 
 interface SettingsContextValue {
   settings: Settings
@@ -17,31 +18,54 @@ const DEFAULT_SETTINGS: Settings = {
   currencyDisplay: 'Both',
 }
 
+function getSettingsKey(userId: string | undefined): string {
+  return userId ? `agencyos_settings_${userId}` : 'agencyos_settings_guest'
+}
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth()
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
 
+  // Load settings for the current user whenever they change
   useEffect(() => {
-    const stored = localStorage.getItem('agencyos_settings')
+    const key = getSettingsKey(user?.id)
+    const stored = localStorage.getItem(key)
     if (stored) {
       try {
         setSettings(JSON.parse(stored))
       } catch {
-        localStorage.removeItem('agencyos_settings')
+        localStorage.removeItem(key)
+        setSettings(DEFAULT_SETTINGS)
       }
+    } else {
+      // Reset to defaults when switching to a user with no saved settings
+      setSettings(DEFAULT_SETTINGS)
     }
-  }, [])
+  }, [user?.id])
 
   const save = (updated: Settings) => {
+    const key = getSettingsKey(user?.id)
     setSettings(updated)
-    localStorage.setItem('agencyos_settings', JSON.stringify(updated))
+    localStorage.setItem(key, JSON.stringify(updated))
   }
 
+  // Use functional form to avoid stale closure on rapid updates
   const updateExchangeRate = (rate: number) => {
-    save({ ...settings, exchangeRate: rate })
+    setSettings(prev => {
+      const updated = { ...prev, exchangeRate: rate }
+      const key = getSettingsKey(user?.id)
+      localStorage.setItem(key, JSON.stringify(updated))
+      return updated
+    })
   }
 
   const updateCurrencyDisplay = (display: CurrencyDisplay) => {
-    save({ ...settings, currencyDisplay: display })
+    setSettings(prev => {
+      const updated = { ...prev, currencyDisplay: display }
+      const key = getSettingsKey(user?.id)
+      localStorage.setItem(key, JSON.stringify(updated))
+      return updated
+    })
   }
 
   return (

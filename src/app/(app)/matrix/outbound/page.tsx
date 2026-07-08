@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Dispatch, SetStateAction } from 'react'
 import { useData } from '@/context/DataContext'
 import { useSettings } from '@/context/SettingsContext'
 import { useAuth } from '@/context/AuthContext'
@@ -9,7 +9,7 @@ import {
   calcColdCall, calcColdEmail, calcColdDM,
   OUTBOUND_DEFAULTS, OutboundCalcResult,
 } from '@/lib/calculations'
-import { formatCurrency, formatUsd, getPLColorClass, usdToPkr } from '@/lib/currency'
+import { formatCurrency, formatUsd, getPLColorClass } from '@/lib/currency'
 import { Save, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react'
 import clsx from 'clsx'
 
@@ -24,7 +24,7 @@ type ChannelForm = {
   openRatio: string
   responseRatio: string
   positiveRatio: string
-  // Cold DM — same as email
+  // Cold DM
   connectRatio: string
   // Shared
   apptRatio: string
@@ -76,6 +76,54 @@ function initForm(channel: OutboundChannel, tier: OutboundTier = 'M'): ChannelFo
   }
 }
 
+// ─── EXTRACTED to module level so React never remounts inputs on re-render ────
+function OutboundRow({
+  label, value, isAuto, fieldKey, suffix = '', prefix = '$', form, setForm,
+}: {
+  label: string
+  value?: string
+  isAuto?: boolean
+  fieldKey?: keyof ChannelForm
+  suffix?: string
+  prefix?: string
+  form: ChannelForm
+  setForm: Dispatch<SetStateAction<ChannelForm>>
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
+      <label className="text-gray-700 text-sm">
+        {label}
+        {isAuto && <span className="badge badge-blue text-[10px] ml-1">Auto</span>}
+      </label>
+      <div>
+        {isAuto || !fieldKey ? (
+          <div className="input-auto">
+            {prefix && <span className="text-gray-500 mr-1">{prefix}</span>}
+            {value}
+            {suffix && <span className="text-gray-500 ml-1">{suffix}</span>}
+          </div>
+        ) : (
+          <div className={`input-prefix-wrap ${suffix ? 'has-suffix' : ''}`}>
+            {prefix && <span className="prefix-symbol">{prefix}</span>}
+            <input
+              type="number"
+              className="input-field"
+              value={form[fieldKey] as string}
+              onChange={e => setForm(p => ({ ...p, [fieldKey]: e.target.value }))}
+              onFocus={e => e.target.select()}
+              onWheel={e => e.currentTarget.blur()}
+              step="any"
+              id={`outbound-${fieldKey}`}
+            />
+            {suffix && <span className="suffix-symbol">{suffix}</span>}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function OutboundMatrixPage() {
   const { outboundEntries, addOutbound } = useData()
   const { settings } = useSettings()
@@ -85,6 +133,7 @@ export default function OutboundMatrixPage() {
   const [calc, setCalc] = useState<OutboundCalcResult | null>(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const [showHistory, setShowHistory] = useState(false)
 
   const runCalc = useCallback(() => {
@@ -128,9 +177,10 @@ export default function OutboundMatrixPage() {
     setForm(prev => ({ ...prev, tier, ...costs }))
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!calc || !form.outbound) return
     setSaving(true)
+    setSaveError('')
     const n = parseFloat
 
     const entry: OutboundEntry = {
@@ -178,49 +228,21 @@ export default function OutboundMatrixPage() {
       createdAt: new Date().toISOString(),
     }
 
-    addOutbound(entry)
+    const result = await addOutbound(entry)
     setSaving(false)
+    if (result.error) {
+      setSaveError(result.error)
+      return
+    }
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
   }
 
   const f = (v: number) => formatCurrency(v, settings.currencyDisplay, settings.exchangeRate)
-
-  const Row = ({ label, value, isAuto, fieldKey, suffix = '', prefix = '$' }: {
-    label: string; value?: string; isAuto?: boolean; fieldKey?: keyof ChannelForm; suffix?: string; prefix?: string
-  }) => (
-    <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
-      <label className="text-gray-700 text-sm">
-        {label}
-        {isAuto && <span className="badge badge-blue text-[10px] ml-1">Auto</span>}
-      </label>
-      <div>
-        {isAuto || !fieldKey ? (
-          <div className="input-auto">
-            {prefix && <span className="text-gray-500 mr-1">{prefix}</span>}
-            {value}
-            {suffix && <span className="text-gray-500 ml-1">{suffix}</span>}
-          </div>
-        ) : (
-          <div className={`input-prefix-wrap ${suffix ? 'has-suffix' : ''}`}>
-            {prefix && <span className="prefix-symbol">{prefix}</span>}
-            <input
-              type="number"
-              className="input-field"
-              value={form[fieldKey] as string}
-              onChange={e => setForm(p => ({ ...p, [fieldKey]: e.target.value }))}
-              min="0"
-              step="any"
-              id={`outbound-${fieldKey}`}
-            />
-            {suffix && <span className="suffix-symbol">{suffix}</span>}
-          </div>
-        )}
-      </div>
-    </div>
-  )
-
   const autoVal = (n: number) => n.toLocaleString('en-US', { maximumFractionDigits: 2 })
+
+  // Shared props passed to every OutboundRow
+  const rowProps = { form, setForm }
 
   return (
     <div className="space-y-6">
@@ -288,56 +310,56 @@ export default function OutboundMatrixPage() {
               {channel === 'Cold Call' ? 'Dialing Funnel' : channel === 'Cold Email' ? 'Email Funnel' : 'DM Funnel'}
             </div>
 
-            <Row label={channel === 'Cold Call' ? 'Dials' : 'Outbound Sent'} fieldKey="outbound" prefix="" />
+            <OutboundRow {...rowProps} label={channel === 'Cold Call' ? 'Dials' : 'Outbound Sent'} fieldKey="outbound" prefix="" />
 
             {channel === 'Cold Call' && <>
-              <Row label="Conn. Ratio (%)" fieldKey="connRatio" prefix="" suffix="%" />
-              <Row label="Connect" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
-              <Row label="Int. Ratio (%)" fieldKey="intRatio" prefix="" suffix="%" />
-              <Row label="Interested" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Conn. Ratio (%)" fieldKey="connRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Connect" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Int. Ratio (%)" fieldKey="intRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Interested" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
             </>}
 
             {channel === 'Cold Email' && <>
-              <Row label="Open Ratio (%)" fieldKey="openRatio" prefix="" suffix="%" />
-              <Row label="Open Rate" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
-              <Row label="Response Ratio (%)" fieldKey="responseRatio" prefix="" suffix="%" />
-              <Row label="Response Rate" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
-              <Row label="Positive Ratio (%)" fieldKey="positiveRatio" prefix="" suffix="%" />
-              <Row label="Positive Respond" isAuto value={autoVal(calc?.step3 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Open Ratio (%)" fieldKey="openRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Open Rate" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Response Ratio (%)" fieldKey="responseRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Response Rate" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Positive Ratio (%)" fieldKey="positiveRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Positive Respond" isAuto value={autoVal(calc?.step3 || 0)} prefix="" />
             </>}
 
             {channel === 'Cold Social DM' && <>
-              <Row label="Connect Ratio (%)" fieldKey="connectRatio" prefix="" suffix="%" />
-              <Row label="Connection" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
-              <Row label="Response Ratio (%)" fieldKey="responseRatio" prefix="" suffix="%" />
-              <Row label="Response Rate" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
-              <Row label="Positive Ratio (%)" fieldKey="positiveRatio" prefix="" suffix="%" />
-              <Row label="Positive Respond" isAuto value={autoVal(calc?.step3 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Connect Ratio (%)" fieldKey="connectRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Connection" isAuto value={autoVal(calc?.step1 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Response Ratio (%)" fieldKey="responseRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Response Rate" isAuto value={autoVal(calc?.step2 || 0)} prefix="" />
+              <OutboundRow {...rowProps} label="Positive Ratio (%)" fieldKey="positiveRatio" prefix="" suffix="%" />
+              <OutboundRow {...rowProps} label="Positive Respond" isAuto value={autoVal(calc?.step3 || 0)} prefix="" />
             </>}
 
-            <Row label="Appt. Ratio (%)" fieldKey="apptRatio" prefix="" suffix="%" />
-            <Row label="Appointments" isAuto value={autoVal(calc?.appointments || 0)} prefix="" />
-            <Row label="Show Up Ratio (%)" fieldKey="showUpRatio" prefix="" suffix="%" />
-            <Row label="Show Up" isAuto value={autoVal(calc?.showUp || 0)} prefix="" />
-            <Row label="Close Ratio (%)" fieldKey="closeRatio" prefix="" suffix="%" />
-            <Row label="Closings" isAuto value={autoVal(calc?.closings || 0)} prefix="" />
-            <Row label="Followup Ratio (%)" fieldKey="followupRatio" prefix="" suffix="%" />
-            <Row label="Followup Closings" isAuto value={autoVal(calc?.followupClosings || 0)} prefix="" />
-            <Row label="Total Closings" isAuto value={autoVal(calc?.totalClosings || 0)} prefix="" />
-            <Row label="Avg. Ticket Size" fieldKey="avgTicketSize" />
-            <Row label="Upsell Ratio (%)" fieldKey="upsellRatio" prefix="" suffix="%" />
-            <Row label="Upsell Value" fieldKey="upsellValue" />
-            <Row label="T. Recurring" isAuto value={formatUsd(calc?.tRecurring || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Appt. Ratio (%)" fieldKey="apptRatio" prefix="" suffix="%" />
+            <OutboundRow {...rowProps} label="Appointments" isAuto value={autoVal(calc?.appointments || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Show Up Ratio (%)" fieldKey="showUpRatio" prefix="" suffix="%" />
+            <OutboundRow {...rowProps} label="Show Up" isAuto value={autoVal(calc?.showUp || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Close Ratio (%)" fieldKey="closeRatio" prefix="" suffix="%" />
+            <OutboundRow {...rowProps} label="Closings" isAuto value={autoVal(calc?.closings || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Followup Ratio (%)" fieldKey="followupRatio" prefix="" suffix="%" />
+            <OutboundRow {...rowProps} label="Followup Closings" isAuto value={autoVal(calc?.followupClosings || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Total Closings" isAuto value={autoVal(calc?.totalClosings || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Avg. Ticket Size" fieldKey="avgTicketSize" />
+            <OutboundRow {...rowProps} label="Upsell Ratio (%)" fieldKey="upsellRatio" prefix="" suffix="%" />
+            <OutboundRow {...rowProps} label="Upsell Value" fieldKey="upsellValue" />
+            <OutboundRow {...rowProps} label="T. Recurring" isAuto value={formatUsd(calc?.tRecurring || 0)} prefix="" />
 
             <div className="text-xs text-gray-500 uppercase tracking-wider font-semibold mt-4 mb-2">Costs (editable)</div>
-            <Row label="Listing" fieldKey="listing" />
-            <Row label="SDR / Email / Social SDR" fieldKey="sdr" />
-            <Row label="Closer" fieldKey="closer" />
-            <Row label="Tools" fieldKey="tools" />
-            <Row label="Other" fieldKey="other" />
-            <Row label="Training & Dev" fieldKey="training" />
-            <Row label="Total Est. Cost" isAuto value={formatUsd(calc?.totalEstCost || 0)} prefix="" />
-            <Row label="Gross P/L" isAuto value={`${(calc?.grossPL || 0) >= 0 ? '+' : ''}${formatUsd(calc?.grossPL || 0)}`} prefix="" />
+            <OutboundRow {...rowProps} label="Listing" fieldKey="listing" />
+            <OutboundRow {...rowProps} label="SDR / Email / Social SDR" fieldKey="sdr" />
+            <OutboundRow {...rowProps} label="Closer" fieldKey="closer" />
+            <OutboundRow {...rowProps} label="Tools" fieldKey="tools" />
+            <OutboundRow {...rowProps} label="Other" fieldKey="other" />
+            <OutboundRow {...rowProps} label="Training & Dev" fieldKey="training" />
+            <OutboundRow {...rowProps} label="Total Est. Cost" isAuto value={formatUsd(calc?.totalEstCost || 0)} prefix="" />
+            <OutboundRow {...rowProps} label="Gross P/L" isAuto value={`${(calc?.grossPL || 0) >= 0 ? '+' : ''}${formatUsd(calc?.grossPL || 0)}`} prefix="" />
           </div>
 
           <button
@@ -352,6 +374,9 @@ export default function OutboundMatrixPage() {
           >
             {saved ? <><RefreshCw className="w-4 h-4" />Saved!</> : <><Save className="w-4 h-4" />Save Entry</>}
           </button>
+          {saveError && (
+            <p className="text-red-400 text-xs text-center mt-2">{saveError}</p>
+          )}
         </div>
 
         {/* Results panel */}

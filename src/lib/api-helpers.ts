@@ -10,7 +10,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { isSupabaseConfigured, getSupabaseAdmin } from './supabase'
-import { DEMO_USERS } from './mockData'
+import { DemoStore } from './demo-store'
 
 // ---------------------------------------------------------------
 // Rate Limiter (in-memory, resets on cold start)
@@ -81,11 +81,11 @@ export interface AuthedUser {
 }
 
 export async function requireAuth(req: NextRequest): Promise<{ authedUser: AuthedUser } | NextResponse> {
-  // Demo mode fallback when Supabase is not configured
+  // Demo mode — validate against mutable DemoStore (includes runtime signups)
   if (!isSupabaseConfigured) {
     const demoHeader = req.headers.get('x-demo-user-id')
     if (demoHeader) {
-      const demoUser = DEMO_USERS.find(u => u.id === demoHeader)
+      const demoUser = DemoStore.findUser(demoHeader)
       if (demoUser) {
         return {
           authedUser: {
@@ -97,15 +97,8 @@ export async function requireAuth(req: NextRequest): Promise<{ authedUser: Authe
         }
       }
     }
-    // In demo mode without a user header, allow founder-level access for prototyping
-    return {
-      authedUser: {
-        id: 'founder-001',
-        email: 'founder@agencyos.com',
-        name: 'Alex Founder',
-        role: 'founder',
-      }
-    }
+    // No valid user header — authentication required
+    return err('Authentication required', 401)
   }
 
   // Supabase mode: validate Bearer token

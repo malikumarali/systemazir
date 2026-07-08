@@ -9,17 +9,26 @@
 // Supabase, this file is never used.
 // ============================================================
 
-import { Lead, InboundEntry, OutboundEntry } from './types'
-import { DEMO_LEADS, DEMO_INBOUND, DEMO_OUTBOUND } from './mockData'
+import { Lead, InboundEntry, OutboundEntry, User } from './types'
+import { DEMO_LEADS, DEMO_INBOUND, DEMO_OUTBOUND, DEMO_USERS as SEED_USERS } from './mockData'
 
 // These are the single source of truth for all demo API routes
 export let demoLeads: Lead[] = [...DEMO_LEADS]
 export let demoInbound: InboundEntry[] = [...DEMO_INBOUND]
 export let demoOutbound: OutboundEntry[] = [...DEMO_OUTBOUND]
 
+// Mutable user registry — includes seeded demo users + any runtime signups
+export let demoUsers: User[] = [...SEED_USERS]
+
 // Mutation helpers (ensure modules all share the same reference)
 export const DemoStore = {
-  // Leads
+  // Users — needed so signup creates isolated accounts
+  getUsers: () => demoUsers,
+  findUser: (id: string) => demoUsers.find(u => u.id === id),
+  findUserByEmail: (email: string) => demoUsers.find(u => u.email === email),
+  addUser: (user: User) => { demoUsers = [...demoUsers, user] },
+
+  // Leads — founders see only their OWN leads (not all founders)
   getLeads: () => demoLeads,
   setLeads: (leads: Lead[]) => { demoLeads = leads },
   addLead: (lead: Lead) => { demoLeads = [lead, ...demoLeads] },

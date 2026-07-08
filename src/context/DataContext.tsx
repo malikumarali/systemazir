@@ -18,6 +18,7 @@ interface DataContextValue {
   addOutbound: (entry: OutboundEntry) => Promise<{ error?: string }>
   updateOutbound: (id: string, entry: OutboundEntry) => Promise<{ error?: string }>
   refetchData: () => Promise<void>
+  clearData: () => void
 }
 
 const DataContext = createContext<DataContextValue | null>(null)
@@ -147,21 +148,33 @@ const getHeaders = () => {
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const { user } = useAuth()
+  const { user, registerClearData } = useAuth()
   const [leads, setLeads] = useState<Lead[]>([])
   const [inboundEntries, setInboundEntries] = useState<InboundEntry[]>([])
   const [outboundEntries, setOutboundEntries] = useState<OutboundEntry[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const clearData = useCallback(() => {
+    setLeads([])
+    setInboundEntries([])
+    setOutboundEntries([])
+    setError(null)
+  }, [])
+
+  // Register clearData with AuthContext so logout can clear it synchronously
+  useEffect(() => {
+    registerClearData(clearData)
+  }, [clearData, registerClearData])
+
   const refetchData = useCallback(async () => {
     if (!user) {
-      setLeads([])
-      setInboundEntries([])
-      setOutboundEntries([])
+      clearData()
       return
     }
 
+    // Immediately clear stale data from previous user before fetching new data
+    clearData()
     setIsLoading(true)
     setError(null)
     try {
@@ -193,7 +206,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false)
     }
-  }, [user])
+  }, [user, clearData])
 
   // Fetch data whenever user logs in or out
   useEffect(() => {
@@ -340,6 +353,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         addOutbound,
         updateOutbound,
         refetchData,
+        clearData,
       }}
     >
       {children}

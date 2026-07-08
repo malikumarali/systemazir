@@ -35,6 +35,7 @@ export default function EditLeadPage() {
     notes: '',
   })
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   useEffect(() => {
     if (!isFounder) { router.replace('/leads'); return }
@@ -68,6 +69,7 @@ export default function EditLeadPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
+    setSaveError('')
     const niche = form.niche === 'Other' ? form.customNiche : form.niche
     const dealValueUsd = parseFloat(form.dealValueUsd) || 0
     const updated: Lead = {
@@ -83,8 +85,12 @@ export default function EditLeadPage() {
       notes: form.notes,
       exchangeRate: settings.exchangeRate,
     }
-    updateLead(lead.id, updated)
+    const result = await updateLead(lead.id, updated)
     setSaving(false)
+    if (result.error) {
+      setSaveError(result.error)
+      return
+    }
     router.push('/leads')
   }
 
@@ -139,7 +145,15 @@ export default function EditLeadPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Deal Value (USD)</label>
               <div className="input-prefix-wrap">
                 <span className="prefix-symbol">$</span>
-                <input type="number" className="input-field" value={form.dealValueUsd} onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))} id="edit-deal-value" />
+                <input
+                  type="number"
+                  className="input-field"
+                  value={form.dealValueUsd}
+                  onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))}
+                  onFocus={e => e.target.select()}
+                  onWheel={e => e.currentTarget.blur()}
+                  id="edit-deal-value"
+                />
               </div>
               {pkrPreview > 0 && <p className="text-gray-500 text-xs mt-1">≈ PKR {pkrPreview.toLocaleString('en-PK')}</p>}
             </div>
@@ -147,7 +161,15 @@ export default function EditLeadPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Monthly Retainer (USD)</label>
               <div className="input-prefix-wrap">
                 <span className="prefix-symbol">$</span>
-                <input type="number" className="input-field" value={form.monthlyRetainer} onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))} id="edit-retainer" />
+                <input
+                  type="number"
+                  className="input-field"
+                  value={form.monthlyRetainer}
+                  onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))}
+                  onFocus={e => e.target.select()}
+                  onWheel={e => e.currentTarget.blur()}
+                  id="edit-retainer"
+                />
               </div>
             </div>
           </div>
@@ -164,6 +186,9 @@ export default function EditLeadPage() {
               {saving ? 'Saving...' : 'Update Lead'}
             </button>
           </div>
+          {saveError && (
+            <p className="text-red-400 text-sm text-center mt-2">{saveError}</p>
+          )}
         </form>
       </div>
     </div>

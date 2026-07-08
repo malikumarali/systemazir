@@ -6,6 +6,7 @@
 import { NextRequest } from 'next/server'
 import { ok, err, sanitizeString, checkRateLimit, getClientIp } from '@/lib/api-helpers'
 import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
+import { DemoStore } from '@/lib/demo-store'
 
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req)
@@ -32,13 +33,18 @@ export async function POST(req: NextRequest) {
 
   // 1. Demo Mode
   if (!isSupabaseConfigured) {
-    // In demo mode, we just return a mocked success, since everything runs client-side fallback
+    // Check for duplicate email in demo mode
+    const existing = DemoStore.findUserByEmail(email)
+    if (existing) return err('An account with this email already exists', 409)
+
     const mockUser = {
       id: `founder-${Date.now()}`,
       email,
       name,
-      role: 'founder',
+      role: 'founder' as const,
     }
+    // Register so requireAuth can find this user in future requests
+    DemoStore.addUser(mockUser)
     return ok({ user: mockUser, token: 'demo-token' }, 201)
   }
 
