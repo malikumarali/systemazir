@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useRef } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
@@ -9,12 +9,18 @@ import Header from '@/components/layout/Header'
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
+  const mainRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace('/login')
     }
   }, [user, isLoading, router])
+
+  useEffect(() => {
+    mainRef.current?.scrollTo(0, 0)
+  }, [pathname])
 
   if (isLoading) {
     return (
@@ -57,7 +63,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <Sidebar />
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <Header />
-        <main style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+        <main ref={mainRef} style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
           <div style={{ maxWidth: 1400, margin: '0 auto' }} className="animate-enter">
             {children}
           </div>

@@ -5,16 +5,10 @@ import { AuthProvider } from '@/context/AuthContext'
 import { SettingsProvider } from '@/context/SettingsContext'
 import { DataProvider } from '@/context/DataContext'
 
-const dmSerifDisplay = DM_Serif_Display({
-  weight: ['400'],
-  style: ['normal', 'italic'],
-  subsets: ['latin'],
-  variable: '--font-display',
-  display: 'swap',
-})
+import { Inter } from 'next/font/google'
 
-const spaceGrotesk = Space_Grotesk({
-  weight: ['300', '400', '500', '600', '700'],
+const inter = Inter({
+  weight: ['400', '500', '600', '700'],
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -32,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${dmSerifDisplay.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body>
         <AuthProvider>
           <SettingsProvider>

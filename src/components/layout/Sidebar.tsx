@@ -39,7 +39,7 @@ export default function Sidebar() {
 
         {/* Wordmark */}
         <div style={{
-          padding: '20px 18px 16px',
+          padding: '14px 18px 12px',
           borderBottom: '1px solid var(--bar-border)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -53,14 +53,14 @@ export default function Sidebar() {
               <div style={{
                 fontFamily: 'var(--font-sans)',
                 fontWeight: 700,
-                fontSize: 15,
+                fontSize: 14,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
                 color: 'var(--bar-text)',
               }}>
-                Agency OS
+                Systemizer
               </div>
-              <div style={{ fontSize: 13, color: 'var(--bar-text-dim)', marginTop: 1 }}>
+              <div style={{ fontSize: 12, color: 'var(--bar-text-dim)', marginTop: 1 }}>
                 Performance workspace
               </div>
             </div>
@@ -68,15 +68,15 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav style={{ flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <nav style={{ flex: 1, padding: '8px 10px', display: 'flex', flexDirection: 'column', gap: 2 }}>
           <div style={{
             fontFamily: 'var(--font-sans)',
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             color: 'var(--bar-text-dimmer)',
-            padding: '4px 8px 8px',
+            padding: '4px 8px 6px',
           }}>
             Main
           </div>
@@ -90,7 +90,7 @@ export default function Sidebar() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 10,
-                  padding: active ? '9px 10px 9px 8px' : '9px 10px',
+                  padding: active ? '7px 8px 7px 6px' : '7px 8px',
                   borderRadius: 2,
                   textDecoration: 'none',
                   borderLeft: active ? '2px solid var(--sienna)' : '2px solid transparent',
@@ -106,33 +106,33 @@ export default function Sidebar() {
                 }}
               >
                 <div style={{
-                  width: 28, height: 28,
+                  width: 24, height: 24,
                   background: active ? 'rgba(211,47,47,0.15)' : 'var(--bar-active-row)',
                   borderRadius: 2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
                   border: `1px solid ${active ? 'rgba(211,47,47,0.25)' : 'var(--bar-border)'}`,
                 }}>
-                  <Icon size={13} color={active ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
+                  <Icon size={12} color={active ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
-                    fontSize: 17, fontWeight: 500,
+                    fontSize: 15, fontWeight: 500,
                     color: active ? 'var(--bar-text)' : 'var(--bar-text-dim)',
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                   }}>
                     {label}
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)', marginTop: 1 }}>{description}</div>
+                  <div style={{ fontSize: 12, color: 'var(--bar-text-dimmer)', marginTop: 1 }}>{description}</div>
                 </div>
-                {active && <ChevronRight size={12} color="var(--sienna)" strokeWidth={2} />}
+                {active && <ChevronRight size={11} color="var(--sienna)" strokeWidth={2} />}
               </Link>
             )
           })}
         </nav>
 
         {/* AI Agent Button */}
-        <div style={{ padding: '10px', borderTop: '1px solid var(--bar-border)' }}>
+        <div style={{ padding: '8px', borderTop: '1px solid var(--bar-border)' }}>
           <button
             onClick={() => setChatbotOpen(prev => !prev)}
             style={{
@@ -140,7 +140,7 @@ export default function Sidebar() {
               display: 'flex',
               alignItems: 'center',
               gap: 10,
-              padding: '10px 10px',
+              padding: '8px 10px',
               borderRadius: 2,
               border: `1px solid ${chatbotOpen ? 'rgba(211,47,47,0.4)' : 'var(--bar-border)'}`,
               background: chatbotOpen ? 'var(--sienna-faint)' : 'transparent',
@@ -158,26 +158,26 @@ export default function Sidebar() {
               }} />
             )}
             <div style={{
-              width: 28, height: 28,
+              width: 24, height: 24,
               background: chatbotOpen ? 'rgba(211,47,47,0.15)' : 'var(--bar-active-row)',
               border: `1px solid ${chatbotOpen ? 'rgba(211,47,47,0.25)' : 'var(--bar-border)'}`,
               borderRadius: 2,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}>
-              <Sparkles size={13} color={chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
+              <Sparkles size={12} color={chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
             </div>
             <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)' }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)' }}>
                 Nemotron Agent
               </div>
-              <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)' }}>Ask AI assistant</div>
+              <div style={{ fontSize: 12, color: 'var(--bar-text-dimmer)' }}>Ask AI assistant</div>
             </div>
           </button>
         </div>
 
         {/* User + Logout */}
-        <div style={{ padding: '10px', borderTop: '1px solid var(--bar-border)' }}>
+        <div style={{ padding: '8px', borderTop: '1px solid var(--bar-border)' }}>
           <button
             onClick={logout}
             style={{
@@ -185,7 +185,7 @@ export default function Sidebar() {
               display: 'flex',
               alignItems: 'center',
               gap: 10,
-              padding: '10px',
+              padding: '8px',
               borderRadius: 2,
               border: '1px solid var(--bar-border)',
               background: 'transparent',
@@ -197,26 +197,26 @@ export default function Sidebar() {
             id="sidebar-logout"
           >
             <div style={{
-              width: 28, height: 28,
+              width: 24, height: 24,
               background: 'var(--bar-active-row)',
               border: '1px solid var(--bar-border)',
               borderRadius: 2,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               fontFamily: 'var(--font-display)',
-              fontSize: 17,
+              fontSize: 15,
               color: 'var(--bar-text)',
               fontWeight: 400,
             }}>
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--bar-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--bar-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.name}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
+              <div style={{ fontSize: 12, color: 'var(--bar-text-dimmer)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
             </div>
-            <LogOut size={12} color="var(--bar-text-dim)" strokeWidth={1.5} />
+            <LogOut size={11} color="var(--bar-text-dim)" strokeWidth={1.5} />
           </button>
         </div>
       </aside>

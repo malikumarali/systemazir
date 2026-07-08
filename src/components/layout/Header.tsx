@@ -19,7 +19,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
 export default function Header() {
   const pathname = usePathname()
   const { settings, updateCurrencyDisplay } = useSettings()
-  const pageInfo = PAGE_TITLES[pathname] || { title: 'Agency OS', subtitle: '' }
+  const pageInfo = PAGE_TITLES[pathname] || { title: 'Systemizer', subtitle: '' }
   const currencyOptions: Array<'USD' | 'PKR' | 'Both'> = ['USD', 'PKR', 'Both']
 
   return (
