@@ -90,6 +90,18 @@ export default function LeadsPage() {
   const sources: LeadSource[] = ['Meta Ads', 'Google Ads', 'Cold Call', 'Cold Email', 'Cold Social DM', 'Referral', 'Other']
   const statuses: DealStatus[] = ['Prospect', 'Qualified', 'Appointment Set', 'Closed Won', 'Closed Lost', 'Churned']
 
+  const filterInputStyle: React.CSSProperties = {
+    padding: '9px 12px',
+    background: 'var(--bar-active-row)',
+    border: '1px solid var(--bar-border)',
+    borderRadius: 8,
+    color: 'var(--bar-text)',
+    fontSize: 14,
+    outline: 'none',
+    cursor: 'pointer',
+    minWidth: 140,
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -154,48 +166,105 @@ export default function LeadsPage() {
       </div>
 
       {/* Filters */}
-      <div className="glass rounded-xl p-4">
-        <div className="flex flex-wrap gap-3">
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-            <input
-              type="text"
-              className="input-field pl-11"
-              placeholder="Search clients, niches..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              id="leads-search"
-            />
-          </div>
-          <select
-            className="input-field w-auto min-w-[140px]"
-            value={filterSource}
-            onChange={e => setFilterSource(e.target.value)}
-            id="filter-source"
-          >
-            <option value="">All Sources</option>
-            {sources.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-          <select
-            className="input-field w-auto min-w-[140px]"
-            value={filterNiche}
-            onChange={e => setFilterNiche(e.target.value)}
-            id="filter-niche"
-          >
-            <option value="">All Niches</option>
-            {uniqueNiches.map(n => <option key={n} value={n}>{n}</option>)}
-          </select>
-          <select
-            className="input-field w-auto min-w-[140px]"
-            value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value)}
-            id="filter-status"
-          >
-            <option value="">All Statuses</option>
-            {statuses.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-      </div>
+<div style={{
+  background: 'var(--bar-bg)',
+  border: '1px solid var(--bar-border)',
+  borderRadius: 12,
+  padding: 16,
+}}>
+  <div className="flex flex-wrap gap-3">
+    {/* Search */}
+    <div className="relative flex-1 min-w-[200px]">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none" style={{ color: 'var(--bar-text-dim)' }} />
+      <input
+        type="text"
+        placeholder="Search clients, niches..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        id="leads-search"
+        style={{
+          width: '100%',
+          paddingLeft: 36,
+          paddingRight: 12,
+          paddingTop: 9,
+          paddingBottom: 9,
+          background: 'var(--bar-active-row)',
+          border: '1px solid var(--bar-border)',
+          borderRadius: 8,
+          color: 'var(--bar-text)',
+          fontSize: 14,
+          outline: 'none',
+        }}
+      />
+    </div>
+
+    {/* Source filter */}
+    <select
+      id="filter-source"
+      value={filterSource}
+      onChange={e => setFilterSource(e.target.value)}
+      style={{
+        minWidth: 140,
+        padding: '9px 12px',
+        background: 'var(--bar-bg)',
+        border: '1px solid var(--bar-border)',
+        borderRadius: 8,
+        color: 'var(--bar-text)',
+        fontSize: 14,
+        outline: 'none',
+        cursor: 'pointer',
+        colorScheme: 'dark',
+      } as React.CSSProperties}
+    >
+      <option value="">All Sources</option>
+      {sources.map(s => <option key={s} value={s}>{s}</option>)}
+    </select>
+
+    {/* Niche filter */}
+    <select
+      id="filter-niche"
+      value={filterNiche}
+      onChange={e => setFilterNiche(e.target.value)}
+      style={{
+        minWidth: 140,
+        padding: '9px 12px',
+        background: 'var(--bar-bg)',
+        border: '1px solid var(--bar-border)',
+        borderRadius: 8,
+        color: 'var(--bar-text)',
+        fontSize: 14,
+        outline: 'none',
+        cursor: 'pointer',
+        colorScheme: 'dark',
+      } as React.CSSProperties}
+    >
+      <option value="">All Niches</option>
+      {uniqueNiches.map(n => <option key={n} value={n}>{n}</option>)}
+    </select>
+
+    {/* Status filter */}
+    <select
+      id="filter-status"
+      value={filterStatus}
+      onChange={e => setFilterStatus(e.target.value)}
+      style={{
+        minWidth: 140,
+        padding: '9px 12px',
+        background: 'var(--bar-bg)',
+        border: '1px solid var(--bar-border)',
+        borderRadius: 8,
+        color: 'var(--bar-text)',
+        fontSize: 14,
+        outline: 'none',
+        cursor: 'pointer',
+        colorScheme: 'dark',
+      } as React.CSSProperties}
+    >
+      <option value="">All Statuses</option>
+      {statuses.map(s => <option key={s} value={s}>{s}</option>)}
+    </select>
+  </div>
+</div>
 
       {/* Table */}
       <div className="glass rounded-xl overflow-hidden">

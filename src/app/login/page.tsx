@@ -81,9 +81,9 @@ export default function LoginPage() {
               Only the funnel you <em>NEED</em> for your revenue and client tracking
             </h1>
             <p className="sub-text">
-              ROI, niche profitability, and acquisition attribution. 
-               A 360 Solution built for agencies that demand clarity.
-            </p>
+  ROI, niche profitability, and acquisition attribution <br />
+  A 360 Solution built for agencies that demand clarity.
+</p>
           </div>
 
           <div className="feature-list">
