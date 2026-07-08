@@ -202,18 +202,18 @@ export default function OutboundMatrixPage() {
             {suffix && <span className="text-gray-500 ml-1">{suffix}</span>}
           </div>
         ) : (
-          <div className="relative">
-            {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{prefix}</span>}
+          <div className={`input-prefix-wrap ${suffix ? 'has-suffix' : ''}`}>
+            {prefix && <span className="prefix-symbol">{prefix}</span>}
             <input
               type="number"
-              className={`input-field ${prefix ? 'pl-7' : ''} ${suffix ? 'pr-8' : ''}`}
+              className="input-field"
               value={form[fieldKey] as string}
               onChange={e => setForm(p => ({ ...p, [fieldKey]: e.target.value }))}
               min="0"
               step="any"
               id={`outbound-${fieldKey}`}
             />
-            {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{suffix}</span>}
+            {suffix && <span className="suffix-symbol">{suffix}</span>}
           </div>
         )}
       </div>

@@ -431,3 +431,55 @@ body {
 .btn-secondary { @apply btn-ghost; }
 .glass { background: var(--ink-800); border: 1px solid var(--ink-600); }
 .gradient-text { color: var(--sienna-light); }
+
+/* ============================================================
+   Input Prefix / Suffix Fix
+   Fixes $ symbol overlapping number inputs across all pages
+   ============================================================ */
+
+.input-prefix-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-prefix-wrap .prefix-symbol {
+  position: absolute;
+  left: 12px;
+  color: var(--ink-400);
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 1;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.input-prefix-wrap .suffix-symbol {
+  position: absolute;
+  right: 12px;
+  color: var(--ink-400);
+  font-size: 15px;
+  pointer-events: none;
+  z-index: 1;
+  line-height: 1;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Give the input room for the prefix — overrides .field padding */
+.input-prefix-wrap .field,
+.input-prefix-wrap .input-field {
+  padding-left: 28px !important;
+}
+
+.input-prefix-wrap.has-suffix .field,
+.input-prefix-wrap.has-suffix .input-field {
+  padding-right: 36px !important;
+}
+
+/* Suppress browser number spinners pushing into the prefix space */
+.input-prefix-wrap input[type=number]::-webkit-inner-spin-button,
+.input-prefix-wrap input[type=number]::-webkit-outer-spin-button {
+  opacity: 1;
+}

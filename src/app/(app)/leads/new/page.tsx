@@ -203,11 +203,11 @@ export default function NewLeadPage() {
             )}
 
             {field('Deal Value (USD)', true,
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+              <div className="input-prefix-wrap">
+                <span className="prefix-symbol">$</span>
                 <input
                   type="number"
-                  className={`input-field pl-7 ${errors.dealValueUsd ? 'error' : ''}`}
+                  className={`input-field ${errors.dealValueUsd ? 'error' : ''}`}
                   placeholder="0"
                   min="0"
                   step="0.01"
@@ -221,11 +221,11 @@ export default function NewLeadPage() {
             )}
 
             {field('Monthly Retainer (USD)', false,
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+              <div className="input-prefix-wrap">
+                <span className="prefix-symbol">$</span>
                 <input
                   type="number"
-                  className="input-field pl-7"
+                  className="input-field"
                   placeholder="0 (if applicable)"
                   min="0"
                   step="0.01"

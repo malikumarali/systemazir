@@ -16,12 +16,12 @@ export function usdToPkr(usd: number, rate: number = DEFAULT_EXCHANGE_RATE): num
  */
 export function formatUsd(value: number): string {
   if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(2)}M`
+    return `$ ${(value / 1_000_000).toFixed(2)}M`
   }
   if (value >= 1_000) {
-    return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+    return `$ ${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
   }
-  return `$${value.toFixed(2)}`
+  return `$ ${value.toFixed(2)}`
 }
 
 /**

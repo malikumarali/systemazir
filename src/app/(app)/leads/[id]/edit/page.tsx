@@ -137,17 +137,17 @@ export default function EditLeadPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Deal Value (USD)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                <input type="number" className="input-field pl-7" value={form.dealValueUsd} onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))} id="edit-deal-value" />
+              <div className="input-prefix-wrap">
+                <span className="prefix-symbol">$</span>
+                <input type="number" className="input-field" value={form.dealValueUsd} onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))} id="edit-deal-value" />
               </div>
               {pkrPreview > 0 && <p className="text-gray-500 text-xs mt-1">≈ PKR {pkrPreview.toLocaleString('en-PK')}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">Monthly Retainer (USD)</label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                <input type="number" className="input-field pl-7" value={form.monthlyRetainer} onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))} id="edit-retainer" />
+              <div className="input-prefix-wrap">
+                <span className="prefix-symbol">$</span>
+                <input type="number" className="input-field" value={form.monthlyRetainer} onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))} id="edit-retainer" />
               </div>
             </div>
           </div>
