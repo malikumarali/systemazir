@@ -152,12 +152,12 @@ export default function DashboardPage() {
     if (!active || !payload?.length) return null
     return (
       <div className="glass rounded-xl p-3 shadow-2xl text-sm">
-        <div className="text-white font-semibold mb-2">{label}</div>
+        <div className="text-gray-900 font-semibold mb-2">{label}</div>
         {payload.map((p: any) => (
           <div key={p.name} className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
-            <span className="text-gray-300">{p.name}:</span>
-            <span className="text-white font-medium">{typeof p.value === 'number' ? f(p.value) : p.value}</span>
+            <span className="text-gray-700">{p.name}:</span>
+            <span className="text-gray-900 font-medium">{typeof p.value === 'number' ? f(p.value) : p.value}</span>
           </div>
         ))}
       </div>
@@ -179,7 +179,7 @@ export default function DashboardPage() {
               <Icon className="w-4 h-4 text-gray-400" />
               <span className="text-gray-400 text-xs">{label}</span>
             </div>
-            <div className={clsx('font-bold text-lg leading-tight', totalPL < 0 && label === 'Gross P/L' ? 'text-red-400' : 'text-white')}>{value}</div>
+            <div className={clsx('font-bold text-lg leading-tight', totalPL < 0 && label === 'Gross P/L' ? 'text-red-400' : 'text-gray-900')}>{value}</div>
           </div>
         ))}
       </div>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
             onClick={() => setTab(id)}
             className={clsx(
               'px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2',
-              tab === id ? 'bg-indigo-600 text-white shadow-lg' : 'text-gray-400 hover:text-white'
+              tab === id ? 'bg-red-600 text-white shadow-lg' : 'text-gray-400 hover:text-gray-900'
             )}
           >
             <Icon size={16} />
@@ -222,9 +222,9 @@ export default function DashboardPage() {
                   onClick={() => setHeatTab(id)}
                   className={clsx(
                     'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                    heatTab === id ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+                    heatTab === id ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-gray-900'
                   )}
-                  style={heatTab !== id ? { background: 'rgba(45, 58, 94, 0.4)', border: '1px solid rgba(45, 58, 94, 0.5)' } : {}}
+                  style={heatTab !== id ? { background: '#f3f4f6', border: '1px solid rgba(0, 0, 0, 0.1)' } : {}}
                   id={`heatmap-tab-${id}`}
                 >
                   Heatmap {id}: {label}
@@ -265,7 +265,7 @@ export default function DashboardPage() {
           {heatTab === 'A' && (
             <div className="glass rounded-2xl p-5 overflow-x-auto">
               <div className="mb-3 flex items-center gap-2">
-                <h3 className="text-white font-semibold">Heatmap A: Budget vs Conv. Ratio → Leads</h3>
+                <h3 className="text-gray-900 font-semibold">Heatmap A: Budget vs Conv. Ratio → Leads</h3>
                 <Info className="w-4 h-4 text-gray-500" />
               </div>
               <div className="flex gap-3 mb-3 text-xs text-gray-500">
@@ -301,10 +301,10 @@ export default function DashboardPage() {
                           {isHovered && (
                             <div
                               className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 p-2 rounded-lg shadow-2xl text-xs whitespace-nowrap"
-                              style={{ background: '#0f1629', border: '1px solid rgba(92, 124, 250, 0.4)' }}
+                              style={{ background: '#ffffff', border: '1px solid rgba(211, 47, 47, 0.3)' }}
                             >
-                              <div className="text-white font-semibold">{cell.leads.toFixed(1)} Leads</div>
-                              <div className="text-indigo-400">Est. Rev: {formatUsd(cell.estimatedRevenue)}</div>
+                              <div className="text-gray-900 font-semibold">{cell.leads.toFixed(1)} Leads</div>
+                              <div className="text-red-600">Est. Rev: {formatUsd(cell.estimatedRevenue)}</div>
                               <div className="text-gray-400">Budget: ${row.budget.toLocaleString()} / Conv: {cell.conv}%</div>
                             </div>
                           )}
@@ -321,7 +321,7 @@ export default function DashboardPage() {
           {heatTab === 'B' && (
             <div className="glass rounded-2xl p-5 overflow-x-auto">
               <div className="mb-3">
-                <h3 className="text-white font-semibold">Heatmap B: Budget vs CPC → Clicks</h3>
+                <h3 className="text-gray-900 font-semibold">Heatmap B: Budget vs CPC → Clicks</h3>
               </div>
               <div className="flex gap-3 mb-3 text-xs text-gray-500">
                 <span className="flex items-center gap-1"><span className="w-3 h-3 rounded" style={{ background: 'rgb(255,50,50)' }} /> Low clicks</span>
@@ -355,9 +355,9 @@ export default function DashboardPage() {
                           {isHovered && (
                             <div
                               className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 p-2 rounded-lg shadow-2xl text-xs whitespace-nowrap"
-                              style={{ background: '#0f1629', border: '1px solid rgba(92, 124, 250, 0.4)' }}
+                              style={{ background: '#ffffff', border: '1px solid rgba(211, 47, 47, 0.3)' }}
                             >
-                              <div className="text-white font-semibold">{cell.clicks.toLocaleString()} Clicks</div>
+                              <div className="text-gray-900 font-semibold">{cell.clicks.toLocaleString()} Clicks</div>
                               <div className="text-gray-400">Budget: ${row.budget.toLocaleString()} / CPC: ${cell.cpc}</div>
                             </div>
                           )}
@@ -378,7 +378,7 @@ export default function DashboardPage() {
       {tab === 'revenue' && (
         <div className="space-y-5">
           <div className="glass rounded-2xl p-6">
-            <h3 className="text-white font-semibold mb-5">Revenue vs Spend by Channel</h3>
+            <h3 className="text-gray-900 font-semibold mb-5">Revenue vs Spend by Channel</h3>
             {channelData.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 No data yet. Add entries in the Revenue Matrix first.
@@ -386,7 +386,7 @@ export default function DashboardPage() {
             ) : (
               <ResponsiveContainer width="100%" height={380}>
                 <ComposedChart data={channelData} margin={{ top: 10, right: 60, left: 20, bottom: 10 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(45, 58, 94, 0.4)" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                   <XAxis dataKey="channel" tick={{ fill: '#9ca3af', fontSize: 15 }} axisLine={false} tickLine={false} />
                   <YAxis yAxisId="left" tick={{ fill: '#9ca3af', fontSize: 15 }} axisLine={false} tickLine={false}
                     tickFormatter={v => `$${(v / 1000).toFixed(0)}K`} />
@@ -406,13 +406,13 @@ export default function DashboardPage() {
           {/* Data table */}
           {channelData.length > 0 && (
             <div className="glass rounded-xl overflow-hidden">
-              <div className="p-4 border-b" style={{ borderColor: 'rgba(45, 58, 94, 0.5)' }}>
-                <h4 className="text-white font-semibold text-sm">Exact Values</h4>
+              <div className="p-4 border-b" style={{ borderColor: 'rgba(0, 0, 0, 0.1)' }}>
+                <h4 className="text-gray-900 font-semibold text-sm">Exact Values</h4>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(45, 58, 94, 0.5)' }}>
+                    <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                       {['Channel', 'T. Recurring (USD)', 'T. Recurring (PKR)', 'Total Cost (USD)', 'Total Cost (PKR)', 'Gross P/L', 'ROAS'].map(h => (
                         <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
                       ))}
@@ -420,8 +420,8 @@ export default function DashboardPage() {
                   </thead>
                   <tbody>
                     {channelData.map(row => (
-                      <tr key={row.channel} className="table-row-hover" style={{ borderBottom: '1px solid rgba(45, 58, 94, 0.3)' }}>
-                        <td className="px-4 py-3 text-white font-medium text-sm">{row.channel}</td>
+                      <tr key={row.channel} className="table-row-hover" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.06)' }}>
+                        <td className="px-4 py-3 text-gray-900 font-medium text-sm">{row.channel}</td>
                         <td className="px-4 py-3 text-emerald-400 font-semibold text-sm">{formatUsd(row.tRecurring)}</td>
                         <td className="px-4 py-3 text-emerald-400/70 text-sm">PKR {usdToPkr(row.tRecurring, settings.exchangeRate).toLocaleString('en-PK')}</td>
                         <td className="px-4 py-3 text-red-400 font-semibold text-sm">{formatUsd(row.totalCost)}</td>
@@ -446,7 +446,7 @@ export default function DashboardPage() {
       {tab === 'niche' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-white font-semibold">Niche Profitability Ranking</h3>
+            <h3 className="text-gray-900 font-semibold">Niche Profitability Ranking</h3>
             <div className="flex items-center gap-2">
               <ArrowUpDown className="w-4 h-4 text-gray-400" />
               <span className="text-gray-400 text-xs">Sort by:</span>
@@ -462,9 +462,9 @@ export default function DashboardPage() {
                     onClick={() => setNicheSort(id)}
                     className={clsx(
                       'px-3 py-1.5 rounded-lg text-xs font-medium transition-all',
-                      nicheSort === id ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+                      nicheSort === id ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-gray-900'
                     )}
-                    style={nicheSort !== id ? { background: 'rgba(45, 58, 94, 0.4)' } : {}}
+                    style={nicheSort !== id ? { background: '#f3f4f6' } : {}}
                     id={`sort-${id}`}
                   >
                     {label}
@@ -485,14 +485,14 @@ export default function DashboardPage() {
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm"
-                        style={{ background: index === 0 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : index === 1 ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : index === 2 ? 'linear-gradient(135deg, #92400e, #78350f)' : 'rgba(45, 58, 94, 0.8)' }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-gray-900 font-bold text-sm"
+                        style={{ background: index === 0 ? 'linear-gradient(135deg, #f59e0b, #d97706)' : index === 1 ? 'linear-gradient(135deg, #9ca3af, #6b7280)' : index === 2 ? 'linear-gradient(135deg, #92400e, #78350f)' : '#6b7280' }}
                       >
                         {index + 1}
                       </div>
                       <div>
-                        <h4 className="text-white font-bold">{niche.niche}</h4>
-                        <span className="text-gray-500 text-xs">Top source: <span className="text-indigo-400">{niche.topSource}</span></span>
+                        <h4 className="text-gray-900 font-bold">{niche.niche}</h4>
+                        <span className="text-gray-500 text-xs">Top source: <span className="text-red-600">{niche.topSource}</span></span>
                       </div>
                     </div>
                     <div className={clsx('text-right')}>
@@ -513,7 +513,7 @@ export default function DashboardPage() {
                     ].map(({ label, value }) => (
                       <div key={label}>
                         <div className="text-gray-500 text-xs mb-0.5">{label}</div>
-                        <div className="text-white font-semibold text-sm">{value}</div>
+                        <div className="text-gray-900 font-semibold text-sm">{value}</div>
                       </div>
                     ))}
                   </div>
@@ -524,7 +524,7 @@ export default function DashboardPage() {
                       <span>Revenue</span>
                       <span>{formatUsd(niche.totalRevenue)}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-gray-800 overflow-hidden">
+                    <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
                       <div
                         className="h-full rounded-full"
                         style={{

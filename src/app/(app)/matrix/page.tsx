@@ -17,7 +17,7 @@ export default function MatrixPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Expense & Revenue Matrix</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Expense & Revenue Matrix</h2>
         <p className="text-gray-400 text-sm mt-1">Track all costs and revenues across inbound and outbound channels</p>
       </div>
 
@@ -30,7 +30,7 @@ export default function MatrixPage() {
         ].map(({ label, value, color }) => (
           <div key={label} className={`rounded-xl p-4 ${color}`}>
             <div className="text-gray-400 text-xs mb-1">{label}</div>
-            <div className="text-white font-bold text-lg">{value}</div>
+            <div className="text-gray-900 font-bold text-lg">{value}</div>
           </div>
         ))}
       </div>
@@ -40,11 +40,11 @@ export default function MatrixPage() {
         <Link href="/matrix/inbound" className="glass rounded-2xl p-6 card-hover group block">
           <div className="flex items-start justify-between mb-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(92, 124, 250, 0.15)' }}>
-              <TrendingUp className="w-6 h-6 text-indigo-400" />
+              <TrendingUp className="w-6 h-6 text-red-600" />
             </div>
-            <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-indigo-400 transition-colors" />
+            <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-red-600 transition-colors" />
           </div>
-          <h3 className="text-white font-bold text-lg mb-1">Inbound Channels</h3>
+          <h3 className="text-gray-900 font-bold text-lg mb-1">Inbound Channels</h3>
           <p className="text-gray-400 text-sm mb-4">Meta Ads & Google Ads ROI calculator with live calculations</p>
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-500">{inboundEntries.length} entries</span>
@@ -57,11 +57,11 @@ export default function MatrixPage() {
         <Link href="/matrix/outbound" className="glass rounded-2xl p-6 card-hover group block">
           <div className="flex items-start justify-between mb-4">
             <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
-              <Phone className="w-6 h-6 text-purple-400" />
+              <Phone className="w-6 h-6 text-red-600" />
             </div>
-            <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-purple-400 transition-colors" />
+            <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-red-600 transition-colors" />
           </div>
-          <h3 className="text-white font-bold text-lg mb-1">Outbound Channels</h3>
+          <h3 className="text-gray-900 font-bold text-lg mb-1">Outbound Channels</h3>
           <p className="text-gray-400 text-sm mb-4">Cold Call, Cold Email & Cold Social DM with tier-based cost defaults</p>
           <div className="flex items-center gap-4 text-sm">
             <span className="text-gray-500">{outboundEntries.length} entries</span>
@@ -75,15 +75,15 @@ export default function MatrixPage() {
       {/* Recent entries */}
       {(inboundEntries.length > 0 || outboundEntries.length > 0) && (
         <div className="glass rounded-xl p-5">
-          <h3 className="text-white font-semibold mb-4">Recent Entries</h3>
+          <h3 className="text-gray-900 font-semibold mb-4">Recent Entries</h3>
           <div className="space-y-2">
             {[...inboundEntries, ...outboundEntries]
               .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
               .slice(0, 5)
               .map(entry => (
-                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-gray-800/50 last:border-0">
+                <div key={entry.id} className="flex items-center justify-between py-2 border-b border-gray-200/50 last:border-0">
                   <div>
-                    <span className="text-white text-sm font-medium">{entry.channel}</span>
+                    <span className="text-gray-900 text-sm font-medium">{entry.channel}</span>
                     <span className="text-gray-500 text-xs ml-2">{entry.month}</span>
                   </div>
                   <div className="text-right">

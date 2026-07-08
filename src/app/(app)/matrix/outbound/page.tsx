@@ -189,8 +189,8 @@ export default function OutboundMatrixPage() {
   const Row = ({ label, value, isAuto, fieldKey, suffix = '', prefix = '$' }: {
     label: string; value?: string; isAuto?: boolean; fieldKey?: keyof ChannelForm; suffix?: string; prefix?: string
   }) => (
-    <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-800/40">
-      <label className="text-gray-300 text-sm">
+    <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
+      <label className="text-gray-700 text-sm">
         {label}
         {isAuto && <span className="badge badge-blue text-[10px] ml-1">Auto</span>}
       </label>
@@ -225,7 +225,7 @@ export default function OutboundMatrixPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-white">Outbound Channel Matrix</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Outbound Channel Matrix</h2>
         <p className="text-gray-400 text-sm mt-1">Cold Call, Cold Email & Cold Social DM tracker</p>
       </div>
 
@@ -243,9 +243,9 @@ export default function OutboundMatrixPage() {
                     onClick={() => handleChannelChange(ch)}
                     className={clsx(
                       'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all text-left',
-                      channel === ch ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-white'
+                      channel === ch ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-gray-900'
                     )}
-                    style={channel !== ch ? { background: 'rgba(45, 58, 94, 0.4)', border: '1px solid rgba(45, 58, 94, 0.5)' } : {}}
+                    style={channel !== ch ? { background: '#f3f4f6', border: '1px solid rgba(0, 0, 0, 0.1)' } : {}}
                     id={`channel-${ch.replace(/ /g, '-').toLowerCase()}`}
                   >
                     {ch}
@@ -264,9 +264,9 @@ export default function OutboundMatrixPage() {
                     onClick={() => handleTierChange(t)}
                     className={clsx(
                       'w-full py-2 px-3 rounded-lg text-xs font-medium transition-all',
-                      form.tier === t ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white'
+                      form.tier === t ? 'bg-red-600 text-white' : 'text-gray-400 hover:text-gray-900'
                     )}
-                    style={form.tier !== t ? { background: 'rgba(45, 58, 94, 0.4)', border: '1px solid rgba(45, 58, 94, 0.5)' } : {}}
+                    style={form.tier !== t ? { background: '#f3f4f6', border: '1px solid rgba(0, 0, 0, 0.1)' } : {}}
                     id={`tier-${t}`}
                   >
                     {t === 'S' ? 'Small' : t === 'M' ? 'Mid' : 'Large'}
@@ -347,7 +347,7 @@ export default function OutboundMatrixPage() {
               'w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white text-sm transition-all',
               saved ? 'bg-emerald-600' : 'hover:opacity-90 disabled:opacity-40'
             )}
-            style={!saved ? { background: 'linear-gradient(135deg, #7c3aed, #6d28d9)' } : {}}
+            style={!saved ? { background: 'linear-gradient(135deg, #ef4444, #b91c1c)' } : {}}
             id="save-outbound-btn"
           >
             {saved ? <><RefreshCw className="w-4 h-4" />Saved!</> : <><Save className="w-4 h-4" />Save Entry</>}
@@ -358,7 +358,7 @@ export default function OutboundMatrixPage() {
         <div className="xl:col-span-2 space-y-4">
           {calc && (
             <div className="glass rounded-2xl p-5 space-y-3">
-              <h3 className="text-white font-semibold text-sm">📊 Live Results</h3>
+              <h3 className="text-gray-900 font-semibold text-sm">📊 Live Results</h3>
               {[
                 { label: 'T. Recurring', value: f(calc.tRecurring) },
                 { label: 'Total Est. Cost', value: formatUsd(calc.totalEstCost), color: 'text-red-400' },
@@ -368,13 +368,13 @@ export default function OutboundMatrixPage() {
               ].map(({ label, value, isPL, plVal, color }) => (
                 <div key={label} className="flex justify-between">
                   <span className="text-gray-400 text-xs">{label}</span>
-                  <span className={clsx('font-semibold text-sm', isPL ? getPLColorClass(plVal!) : color || 'text-gray-200')}>
+                  <span className={clsx('font-semibold text-sm', isPL ? getPLColorClass(plVal!) : color || 'text-gray-800')}>
                     {value}
                   </span>
                 </div>
               ))}
 
-              <div className="pt-3 border-t border-gray-800/50">
+              <div className="pt-3 border-t border-gray-200/50">
                 <div className="text-xs text-gray-500 uppercase tracking-wider mb-2">Cost Breakdown</div>
                 {[
                   { label: 'Listing', key: 'listing' },
@@ -402,14 +402,14 @@ export default function OutboundMatrixPage() {
       {/* History */}
       <div className="glass rounded-xl overflow-hidden">
         <button className="w-full flex items-center justify-between p-5 text-left" onClick={() => setShowHistory(!showHistory)} id="outbound-history-toggle">
-          <span className="text-white font-semibold">Saved Entries ({outboundEntries.length})</span>
+          <span className="text-gray-900 font-semibold">Saved Entries ({outboundEntries.length})</span>
           {showHistory ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
         </button>
         {showHistory && (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr style={{ borderTop: '1px solid rgba(45, 58, 94, 0.5)' }}>
+                <tr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
                   {['Channel', 'Month', 'Tier', 'Outbound', 'Closings', 'T. Recurring', 'Est. Cost', 'Gross P/L'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
                   ))}
@@ -417,13 +417,13 @@ export default function OutboundMatrixPage() {
               </thead>
               <tbody>
                 {outboundEntries.map(e => (
-                  <tr key={e.id} className="table-row-hover" style={{ borderTop: '1px solid rgba(45, 58, 94, 0.3)' }}>
-                    <td className="px-4 py-3 text-white text-sm font-medium">{e.channel}</td>
+                  <tr key={e.id} className="table-row-hover" style={{ borderTop: '1px solid rgba(0, 0, 0, 0.06)' }}>
+                    <td className="px-4 py-3 text-gray-900 text-sm font-medium">{e.channel}</td>
                     <td className="px-4 py-3 text-gray-400 text-sm">{e.month}</td>
                     <td className="px-4 py-3"><span className="badge badge-purple">{e.tier}</span></td>
-                    <td className="px-4 py-3 text-gray-300 text-sm">{e.outbound.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-gray-300 text-sm">{e.totalClosings.toFixed(1)}</td>
-                    <td className="px-4 py-3 text-white font-semibold text-sm">{formatUsd(e.tRecurring)}</td>
+                    <td className="px-4 py-3 text-gray-700 text-sm">{e.outbound.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-gray-700 text-sm">{e.totalClosings.toFixed(1)}</td>
+                    <td className="px-4 py-3 text-gray-900 font-semibold text-sm">{formatUsd(e.tRecurring)}</td>
                     <td className="px-4 py-3 text-red-400 text-sm">{formatUsd(e.totalEstCost)}</td>
                     <td className={clsx('px-4 py-3 text-sm font-semibold', getPLColorClass(e.grossPL))}>
                       {e.grossPL >= 0 ? '+' : ''}{formatUsd(e.grossPL)}

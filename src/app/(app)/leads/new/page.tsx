@@ -106,7 +106,7 @@ export default function NewLeadPage() {
 
   const field = (label: string, required: boolean, children: React.ReactNode, error?: string, hint?: string) => (
     <div>
-      <label className="block text-sm font-medium text-gray-300 mb-1.5">
+      <label className="block text-sm font-medium text-gray-700 mb-1.5">
         {label}{required && <span className="text-red-400 ml-1">*</span>}
       </label>
       {children}
@@ -118,7 +118,7 @@ export default function NewLeadPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Back */}
-      <Link href="/leads" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm w-fit">
+      <Link href="/leads" className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors text-sm w-fit">
         <ArrowLeft className="w-4 h-4" />
         Back to Leads
       </Link>
@@ -126,7 +126,7 @@ export default function NewLeadPage() {
       <div className="glass rounded-2xl p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-xl font-bold text-white">Add New Lead</h2>
+            <h2 className="text-xl font-bold text-gray-900">Add New Lead</h2>
             <p className="text-gray-400 text-sm mt-0.5">Record a new client or deal</p>
           </div>
           <ExcelUpload
@@ -251,8 +251,8 @@ export default function NewLeadPage() {
           <div className="flex gap-3 pt-2">
             <Link
               href="/leads"
-              className="flex-1 py-3 rounded-xl text-gray-300 text-sm font-medium text-center transition-all hover:bg-white/5"
-              style={{ border: '1px solid rgba(45, 58, 94, 0.6)' }}
+              className="flex-1 py-3 rounded-xl text-gray-700 text-sm font-medium text-center transition-all hover:bg-white/5"
+              style={{ border: '1px solid rgba(0, 0, 0, 0.12)' }}
             >
               Cancel
             </Link>
@@ -260,7 +260,7 @@ export default function NewLeadPage() {
               type="submit"
               disabled={saving}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg, #5c7cfa, #4263eb)' }}
+              style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
               id="save-lead-btn"
             >
               <Save className="w-4 h-4" />

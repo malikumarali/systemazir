@@ -130,7 +130,7 @@ export default function SettingsPage() {
       {/* Exchange Rate */}
       <div className="panel p-6" style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-600)' }}>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(194,82,42,0.2)' }}>
+          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(211,47,47,0.2)' }}>
             <DollarSign className="w-5 h-5 text-sienna" />
           </div>
           <div>
@@ -172,7 +172,7 @@ export default function SettingsPage() {
       {/* Currency Display */}
       <div className="panel p-6" style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-600)' }}>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(194,82,42,0.2)' }}>
+          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(211,47,47,0.2)' }}>
             <Settings className="w-5 h-5 text-sienna" />
           </div>
           <div>
@@ -207,7 +207,7 @@ export default function SettingsPage() {
       {/* Team Member Management */}
       <div className="panel p-6" style={{ background: 'var(--ink-800)', border: '1px solid var(--ink-600)' }}>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(194,82,42,0.2)' }}>
+          <div className="w-10 h-10 rounded-sm flex items-center justify-center" style={{ background: 'var(--sienna-faint)', border: '1px solid rgba(211,47,47,0.2)' }}>
             <Users className="w-5 h-5 text-sienna" />
           </div>
           <div>

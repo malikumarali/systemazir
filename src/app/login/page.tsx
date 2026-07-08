@@ -152,7 +152,7 @@ export default function LoginPage() {
                 <div style={{
                   width: 32, height: 32,
                   background: 'var(--sienna-faint)',
-                  border: '1px solid rgba(194,82,42,0.2)',
+                  border: '1px solid rgba(211,47,47,0.2)',
                   borderRadius: 2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
@@ -275,7 +275,7 @@ export default function LoginPage() {
               borderLeft: '2px solid #d94f4f',
               borderRadius: 2,
               fontSize: 17,
-              color: '#e88080',
+              color: '#b91c1c',
             }}>
               {error}
             </div>
@@ -289,7 +289,7 @@ export default function LoginPage() {
               borderLeft: '2px solid #4a9e6b',
               borderRadius: 2,
               fontSize: 17,
-              color: '#6bc98a',
+              color: '#15803d',
             }}>
               {success}
             </div>

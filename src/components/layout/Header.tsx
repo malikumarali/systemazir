@@ -30,8 +30,8 @@ export default function Header() {
       padding: '0 24px',
       height: 52,
       flexShrink: 0,
-      background: 'var(--ink-900)',
-      borderBottom: '1px solid var(--ink-600)',
+      background: 'var(--bar-bg)',
+      borderBottom: '1px solid var(--bar-border)',
     }}>
       {/* Page title */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -40,13 +40,13 @@ export default function Header() {
           <h1 style={{
             fontFamily: 'var(--font-display)',
             fontSize: '1.1rem',
-            color: 'var(--cream)',
+            color: 'var(--bar-text)',
             lineHeight: 1.1,
           }}>
             {pageInfo.title}
           </h1>
           {pageInfo.subtitle && (
-            <p style={{ fontSize: 14, color: 'var(--ink-400)', marginTop: 1 }}>
+            <p style={{ fontSize: 14, color: 'var(--bar-text-dim)', marginTop: 1 }}>
               {pageInfo.subtitle}
             </p>
           )}
@@ -59,10 +59,10 @@ export default function Header() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: 6,
           padding: '5px 10px',
-          border: '1px solid var(--ink-600)',
+          border: '1px solid var(--bar-border)',
           borderRadius: 2,
           fontSize: 14,
-          color: 'var(--ink-400)',
+          color: 'var(--bar-text-dim)',
           marginRight: 6,
         }}>
           <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4a9e6b', flexShrink: 0 }} />
@@ -72,11 +72,11 @@ export default function Header() {
         {/* Currency toggle */}
         <div style={{
           display: 'flex', alignItems: 'center',
-          border: '1px solid var(--ink-600)',
+          border: '1px solid var(--bar-border)',
           borderRadius: 2,
           overflow: 'hidden',
         }}>
-          <DollarSign size={12} color="var(--ink-400)" strokeWidth={1.5} style={{ marginLeft: 8 }} />
+          <DollarSign size={12} color="var(--bar-text-dim)" strokeWidth={1.5} style={{ marginLeft: 8 }} />
           {currencyOptions.map((opt, i) => (
             <button
               key={opt}
@@ -87,9 +87,9 @@ export default function Header() {
                 fontSize: 14,
                 fontWeight: 600,
                 background: settings.currencyDisplay === opt ? 'var(--sienna)' : 'transparent',
-                color: settings.currencyDisplay === opt ? 'var(--cream)' : 'var(--ink-400)',
+                color: settings.currencyDisplay === opt ? '#ffffff' : 'var(--bar-text-dim)',
                 border: 'none',
-                borderLeft: i > 0 ? '1px solid var(--ink-600)' : 'none',
+                borderLeft: i > 0 ? '1px solid var(--bar-border)' : 'none',
                 cursor: 'pointer',
                 transition: 'background-color 0.1s ease, color 0.1s ease',
                 fontFamily: 'var(--font-sans)',
@@ -105,19 +105,19 @@ export default function Header() {
           style={{
             width: 32, height: 32,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            border: '1px solid var(--ink-600)',
+            border: '1px solid var(--bar-border)',
             borderRadius: 2,
             background: 'transparent',
             cursor: 'pointer',
-            color: 'var(--ink-400)',
+            color: 'var(--bar-text-dim)',
             transition: 'color 0.1s ease, background-color 0.1s ease',
           }}
           onMouseEnter={e => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--cream)'
-            ;(e.currentTarget as HTMLButtonElement).style.background = 'var(--ink-700)'
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--bar-text)'
+            ;(e.currentTarget as HTMLButtonElement).style.background = 'var(--bar-hover)'
           }}
           onMouseLeave={e => {
-            (e.currentTarget as HTMLButtonElement).style.color = 'var(--ink-400)'
+            (e.currentTarget as HTMLButtonElement).style.color = 'var(--bar-text-dim)'
             ;(e.currentTarget as HTMLButtonElement).style.background = 'transparent'
           }}
           id="header-notifications"

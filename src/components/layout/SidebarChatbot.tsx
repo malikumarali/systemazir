@@ -161,7 +161,7 @@ export default function SidebarChatbot({ isOpen, onClose }: SidebarChatbotProps)
         <div style={{
           width: 28, height: 28,
           background: 'var(--sienna-faint)',
-          border: '1px solid rgba(194,82,42,0.25)',
+          border: '1px solid rgba(211,47,47,0.25)',
           borderRadius: 2,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>

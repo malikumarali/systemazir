@@ -147,8 +147,8 @@ export default function InboundMatrixPage() {
     const formValue = (form as unknown as Record<string, string>)[fieldKey] ?? ''
 
     return (
-      <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-800/40">
-        <label className="text-gray-300 text-sm flex items-center gap-1">
+      <div className="grid grid-cols-2 gap-3 items-center py-2 border-b border-gray-200/40">
+        <label className="text-gray-700 text-sm flex items-center gap-1">
           {label}
           {required && <span className="text-red-400">*</span>}
           {isAuto && (
@@ -193,7 +193,7 @@ export default function InboundMatrixPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Inbound Channel Matrix</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Inbound Channel Matrix</h2>
           <p className="text-gray-400 text-sm mt-1">Meta Ads & Google Ads ROI calculator</p>
         </div>
         <ExcelUpload
@@ -208,7 +208,7 @@ export default function InboundMatrixPage() {
           {/* Channel + Month */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Channel</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Channel</label>
               <div className="flex gap-2">
                 {(['Meta Ads', 'Google Ads'] as InboundChannel[]).map(ch => (
                   <button
@@ -217,10 +217,10 @@ export default function InboundMatrixPage() {
                     className={clsx(
                       'flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all',
                       channel === ch
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-400 hover:text-white'
+                        ? 'bg-red-600 text-white'
+                        : 'text-gray-400 hover:text-gray-900'
                     )}
-                    style={channel !== ch ? { background: 'rgba(45, 58, 94, 0.4)', border: '1px solid rgba(45, 58, 94, 0.6)' } : {}}
+                    style={channel !== ch ? { background: '#f3f4f6', border: '1px solid rgba(0, 0, 0, 0.12)' } : {}}
                     id={`channel-${ch.replace(' ', '-').toLowerCase()}`}
                   >
                     {ch}
@@ -229,7 +229,7 @@ export default function InboundMatrixPage() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Month</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Month</label>
               <input
                 type="month"
                 className="input-field"
@@ -276,7 +276,7 @@ export default function InboundMatrixPage() {
               'w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white text-sm transition-all mt-4',
               saved ? 'bg-emerald-600' : 'hover:opacity-90 disabled:opacity-40'
             )}
-            style={!saved ? { background: 'linear-gradient(135deg, #5c7cfa, #4263eb)' } : {}}
+            style={!saved ? { background: 'linear-gradient(135deg, #ef4444, #b91c1c)' } : {}}
             id="save-inbound-btn"
           >
             {saved ? <><RefreshCw className="w-4 h-4" />Saved!</> : <><Save className="w-4 h-4" />Save Entry</>}
@@ -289,7 +289,7 @@ export default function InboundMatrixPage() {
             <>
               {/* Key metrics */}
               <div className="glass rounded-2xl p-5 space-y-3">
-                <h3 className="text-white font-semibold text-sm">📊 Live Results</h3>
+                <h3 className="text-gray-900 font-semibold text-sm">📊 Live Results</h3>
                 {[
                   { label: 'T. Recurring', value: f(calc.tRecurring), highlight: true },
                   { label: 'Gross P/L', value: `${calc.grossPL >= 0 ? '+' : ''}${f(calc.grossPL)}`, isPL: true, plVal: calc.grossPL },
@@ -303,7 +303,7 @@ export default function InboundMatrixPage() {
                     <span className="text-gray-400 text-xs">{label}</span>
                     <span className={clsx(
                       'font-semibold text-sm',
-                      highlight ? 'text-white' : isPL ? getPLColorClass(plVal!) : 'text-gray-200'
+                      highlight ? 'text-gray-900' : isPL ? getPLColorClass(plVal!) : 'text-gray-800'
                     )}>
                       {value}
                     </span>
@@ -317,7 +317,7 @@ export default function InboundMatrixPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-gray-500 text-xs">T. Recurring</span>
-                    <span className="text-white text-xs font-medium">
+                    <span className="text-gray-900 text-xs font-medium">
                       PKR {usdToPkr(calc.tRecurring, settings.exchangeRate).toLocaleString('en-PK')}
                     </span>
                   </div>
@@ -327,7 +327,7 @@ export default function InboundMatrixPage() {
                       PKR {usdToPkr(parseFloat(form.budgetUsd) || 0, settings.exchangeRate).toLocaleString('en-PK')}
                     </span>
                   </div>
-                  <div className="flex justify-between pt-2 border-t border-gray-800">
+                  <div className="flex justify-between pt-2 border-t border-gray-200">
                     <span className="text-gray-400 text-xs font-semibold">Gross P/L</span>
                     <span className={clsx('text-xs font-bold', getPLColorClass(calc.grossPL))}>
                       PKR {usdToPkr(Math.abs(calc.grossPL), settings.exchangeRate).toLocaleString('en-PK')}
@@ -347,14 +347,14 @@ export default function InboundMatrixPage() {
           onClick={() => setShowHistory(!showHistory)}
           id="inbound-history-toggle"
         >
-          <span className="text-white font-semibold">Saved Entries ({inboundEntries.length})</span>
+          <span className="text-gray-900 font-semibold">Saved Entries ({inboundEntries.length})</span>
           {showHistory ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
         </button>
         {showHistory && (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr style={{ borderTop: '1px solid rgba(45, 58, 94, 0.5)' }}>
+                <tr style={{ borderTop: '1px solid rgba(0, 0, 0, 0.1)' }}>
                   {['Channel', 'Month', 'Budget', 'Leads', 'Closings', 'T. Recurring', 'ROAS', 'Gross P/L'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">{h}</th>
                   ))}
@@ -362,14 +362,14 @@ export default function InboundMatrixPage() {
               </thead>
               <tbody>
                 {inboundEntries.map(e => (
-                  <tr key={e.id} className="table-row-hover" style={{ borderTop: '1px solid rgba(45, 58, 94, 0.3)' }}>
-                    <td className="px-4 py-3 text-white text-sm font-medium">{e.channel}</td>
+                  <tr key={e.id} className="table-row-hover" style={{ borderTop: '1px solid rgba(0, 0, 0, 0.06)' }}>
+                    <td className="px-4 py-3 text-gray-900 text-sm font-medium">{e.channel}</td>
                     <td className="px-4 py-3 text-gray-400 text-sm">{e.month}</td>
-                    <td className="px-4 py-3 text-gray-300 text-sm">{formatUsd(e.budgetUsd)}</td>
-                    <td className="px-4 py-3 text-gray-300 text-sm">{e.leads.toFixed(1)}</td>
-                    <td className="px-4 py-3 text-gray-300 text-sm">{e.totalClosings.toFixed(1)}</td>
-                    <td className="px-4 py-3 text-white font-semibold text-sm">{formatUsd(e.tRecurring)}</td>
-                    <td className="px-4 py-3 text-indigo-400 text-sm">{e.roas.toFixed(2)}x</td>
+                    <td className="px-4 py-3 text-gray-700 text-sm">{formatUsd(e.budgetUsd)}</td>
+                    <td className="px-4 py-3 text-gray-700 text-sm">{e.leads.toFixed(1)}</td>
+                    <td className="px-4 py-3 text-gray-700 text-sm">{e.totalClosings.toFixed(1)}</td>
+                    <td className="px-4 py-3 text-gray-900 font-semibold text-sm">{formatUsd(e.tRecurring)}</td>
+                    <td className="px-4 py-3 text-red-600 text-sm">{e.roas.toFixed(2)}x</td>
                     <td className={clsx('px-4 py-3 text-sm font-semibold', getPLColorClass(e.grossPL))}>
                       {e.grossPL >= 0 ? '+' : ''}{formatUsd(e.grossPL)}
                     </td>

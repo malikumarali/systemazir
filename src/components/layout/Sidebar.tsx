@@ -30,8 +30,8 @@ export default function Sidebar() {
         flexShrink: 0,
         display: 'flex',
         flexDirection: 'column',
-        background: 'var(--ink-800)',
-        borderRight: '1px solid var(--ink-600)',
+        background: 'var(--bar-bg)',
+        borderRight: '1px solid var(--bar-border)',
         position: 'relative',
       }}>
         {/* Sienna top accent line */}
@@ -40,7 +40,7 @@ export default function Sidebar() {
         {/* Wordmark */}
         <div style={{
           padding: '20px 18px 16px',
-          borderBottom: '1px solid var(--ink-600)',
+          borderBottom: '1px solid var(--bar-border)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
@@ -56,11 +56,11 @@ export default function Sidebar() {
                 fontSize: 15,
                 letterSpacing: '0.12em',
                 textTransform: 'uppercase',
-                color: 'var(--cream)',
+                color: 'var(--bar-text)',
               }}>
                 Agency OS
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-400)', marginTop: 1 }}>
+              <div style={{ fontSize: 13, color: 'var(--bar-text-dim)', marginTop: 1 }}>
                 Performance workspace
               </div>
             </div>
@@ -75,7 +75,7 @@ export default function Sidebar() {
             fontWeight: 600,
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
-            color: 'var(--ink-400)',
+            color: 'var(--bar-text-dimmer)',
             padding: '4px 8px 8px',
           }}>
             Main
@@ -99,7 +99,7 @@ export default function Sidebar() {
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => {
-                  if (!active) (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.03)'
+                  if (!active) (e.currentTarget as HTMLElement).style.background = 'var(--bar-hover)'
                 }}
                 onMouseLeave={e => {
                   if (!active) (e.currentTarget as HTMLElement).style.background = 'transparent'
@@ -107,23 +107,23 @@ export default function Sidebar() {
               >
                 <div style={{
                   width: 28, height: 28,
-                  background: active ? 'rgba(194,82,42,0.15)' : 'var(--ink-700)',
+                  background: active ? 'rgba(211,47,47,0.15)' : 'var(--bar-active-row)',
                   borderRadius: 2,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
-                  border: `1px solid ${active ? 'rgba(194,82,42,0.25)' : 'var(--ink-600)'}`,
+                  border: `1px solid ${active ? 'rgba(211,47,47,0.25)' : 'var(--bar-border)'}`,
                 }}>
-                  <Icon size={13} color={active ? 'var(--sienna-light)' : 'var(--ink-300)'} strokeWidth={1.5} />
+                  <Icon size={13} color={active ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     fontSize: 17, fontWeight: 500,
-                    color: active ? 'var(--cream)' : 'var(--ink-200)',
+                    color: active ? 'var(--bar-text)' : 'var(--bar-text-dim)',
                     whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
                   }}>
                     {label}
                   </div>
-                  <div style={{ fontSize: 13, color: 'var(--ink-400)', marginTop: 1 }}>{description}</div>
+                  <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)', marginTop: 1 }}>{description}</div>
                 </div>
                 {active && <ChevronRight size={12} color="var(--sienna)" strokeWidth={2} />}
               </Link>
@@ -132,7 +132,7 @@ export default function Sidebar() {
         </nav>
 
         {/* AI Agent Button */}
-        <div style={{ padding: '10px', borderTop: '1px solid var(--ink-600)' }}>
+        <div style={{ padding: '10px', borderTop: '1px solid var(--bar-border)' }}>
           <button
             onClick={() => setChatbotOpen(prev => !prev)}
             style={{
@@ -142,7 +142,7 @@ export default function Sidebar() {
               gap: 10,
               padding: '10px 10px',
               borderRadius: 2,
-              border: `1px solid ${chatbotOpen ? 'rgba(194,82,42,0.4)' : 'var(--ink-600)'}`,
+              border: `1px solid ${chatbotOpen ? 'rgba(211,47,47,0.4)' : 'var(--bar-border)'}`,
               background: chatbotOpen ? 'var(--sienna-faint)' : 'transparent',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
@@ -159,25 +159,25 @@ export default function Sidebar() {
             )}
             <div style={{
               width: 28, height: 28,
-              background: chatbotOpen ? 'rgba(194,82,42,0.15)' : 'var(--ink-700)',
-              border: `1px solid ${chatbotOpen ? 'rgba(194,82,42,0.25)' : 'var(--ink-600)'}`,
+              background: chatbotOpen ? 'rgba(211,47,47,0.15)' : 'var(--bar-active-row)',
+              border: `1px solid ${chatbotOpen ? 'rgba(211,47,47,0.25)' : 'var(--bar-border)'}`,
               borderRadius: 2,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
             }}>
-              <Sparkles size={13} color={chatbotOpen ? 'var(--sienna-light)' : 'var(--ink-300)'} strokeWidth={1.5} />
+              <Sparkles size={13} color={chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)'} strokeWidth={1.5} />
             </div>
             <div style={{ textAlign: 'left', flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--ink-200)' }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: chatbotOpen ? 'var(--sienna-light)' : 'var(--bar-text-dim)' }}>
                 Nemotron Agent
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-400)' }}>Ask AI assistant</div>
+              <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)' }}>Ask AI assistant</div>
             </div>
           </button>
         </div>
 
         {/* User + Logout */}
-        <div style={{ padding: '10px', borderTop: '1px solid var(--ink-600)' }}>
+        <div style={{ padding: '10px', borderTop: '1px solid var(--bar-border)' }}>
           <button
             onClick={logout}
             style={{
@@ -187,36 +187,36 @@ export default function Sidebar() {
               gap: 10,
               padding: '10px',
               borderRadius: 2,
-              border: '1px solid var(--ink-600)',
+              border: '1px solid var(--bar-border)',
               background: 'transparent',
               cursor: 'pointer',
               transition: 'background-color 0.1s ease',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(217,79,79,0.06)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(217,79,79,0.1)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             id="sidebar-logout"
           >
             <div style={{
               width: 28, height: 28,
-              background: 'var(--ink-700)',
-              border: '1px solid var(--ink-600)',
+              background: 'var(--bar-active-row)',
+              border: '1px solid var(--bar-border)',
               borderRadius: 2,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               flexShrink: 0,
               fontFamily: 'var(--font-display)',
               fontSize: 17,
-              color: 'var(--cream)',
+              color: 'var(--bar-text)',
               fontWeight: 400,
             }}>
               {user?.name?.charAt(0).toUpperCase()}
             </div>
             <div style={{ flex: 1, minWidth: 0, textAlign: 'left' }}>
-              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink-200)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--bar-text-dim)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.name}
               </div>
-              <div style={{ fontSize: 13, color: 'var(--ink-400)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
+              <div style={{ fontSize: 13, color: 'var(--bar-text-dimmer)', textTransform: 'capitalize' }}>{user?.role?.replace('_', ' ')}</div>
             </div>
-            <LogOut size={12} color="var(--ink-400)" strokeWidth={1.5} />
+            <LogOut size={12} color="var(--bar-text-dim)" strokeWidth={1.5} />
           </button>
         </div>
       </aside>

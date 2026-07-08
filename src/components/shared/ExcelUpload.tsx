@@ -71,9 +71,9 @@ export default function ExcelUpload({ onData, expectedFields }: ExcelUploadProps
         onClick={() => inputRef.current?.click()}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all hover:opacity-80"
         style={{
-          background: 'rgba(92, 124, 250, 0.1)',
-          border: '1px solid rgba(92, 124, 250, 0.3)',
-          color: '#818cf8',
+          background: 'rgba(211, 47, 47, 0.08)',
+          border: '1px solid rgba(211, 47, 47, 0.3)',
+          color: '#d32f2f',
         }}
         id="excel-upload-btn"
       >
@@ -93,34 +93,34 @@ export default function ExcelUpload({ onData, expectedFields }: ExcelUploadProps
       {/* Status panel */}
       {showPanel && (
         <div
-          className="absolute right-0 top-10 z-50 w-72 rounded-xl p-4 shadow-2xl"
-          style={{ background: '#0f1629', border: '1px solid rgba(45, 58, 94, 0.8)' }}
+          className="absolute right-0 top-10 z-50 w-72 rounded-xl p-4 shadow-xl"
+          style={{ background: '#ffffff', border: '1px solid #e5e5e5' }}
         >
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">
               {status === 'success' ? (
-                <CheckCircle className="w-4 h-4 text-emerald-400" />
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-red-400" />
+                <AlertCircle className="w-4 h-4 text-red-600" />
               )}
-              <span className="text-white text-sm font-medium">
+              <span className="text-gray-900 text-sm font-medium">
                 {status === 'success' ? 'File imported' : 'Import error'}
               </span>
             </div>
-            <button onClick={() => setShowPanel(false)} className="text-gray-500 hover:text-gray-300">
+            <button onClick={() => setShowPanel(false)} className="text-gray-400 hover:text-gray-700">
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          <p className="text-gray-400 text-xs mb-2 truncate">{fileName}</p>
+          <p className="text-gray-500 text-xs mb-2 truncate">{fileName}</p>
 
           {missingFields.length > 0 && (
             <div className="mt-2">
-              <p className="text-red-400 text-xs font-medium mb-1">Missing required fields:</p>
+              <p className="text-red-600 text-xs font-medium mb-1">Missing required fields:</p>
               <ul className="space-y-0.5">
                 {missingFields.map(f => (
-                  <li key={f} className="text-red-300 text-xs flex items-center gap-1">
-                    <span className="w-1 h-1 bg-red-400 rounded-full flex-shrink-0" />
+                  <li key={f} className="text-red-600 text-xs flex items-center gap-1">
+                    <span className="w-1 h-1 bg-red-600 rounded-full flex-shrink-0" />
                     {f}
                   </li>
                 ))}
@@ -132,7 +132,7 @@ export default function ExcelUpload({ onData, expectedFields }: ExcelUploadProps
           )}
 
           {status === 'success' && missingFields.length === 0 && (
-            <p className="text-emerald-400 text-xs">All fields mapped successfully. Review and submit.</p>
+            <p className="text-emerald-700 text-xs">All fields mapped successfully. Review and submit.</p>
           )}
         </div>
       )}

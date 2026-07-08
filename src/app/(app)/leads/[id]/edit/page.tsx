@@ -58,7 +58,7 @@ export default function EditLeadPage() {
     return (
       <div className="text-center py-20">
         <p className="text-gray-400">Lead not found.</p>
-        <Link href="/leads" className="text-indigo-400 hover:underline text-sm mt-2 inline-block">← Back to leads</Link>
+        <Link href="/leads" className="text-red-600 hover:underline text-sm mt-2 inline-block">← Back to leads</Link>
       </div>
     )
   }
@@ -90,53 +90,53 @@ export default function EditLeadPage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <Link href="/leads" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm w-fit">
+      <Link href="/leads" className="flex items-center gap-2 text-gray-400 hover:text-gray-900 transition-colors text-sm w-fit">
         <ArrowLeft className="w-4 h-4" />
         Back to Leads
       </Link>
 
       <div className="glass rounded-2xl p-6">
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-white">Edit Lead</h2>
+          <h2 className="text-xl font-bold text-gray-900">Edit Lead</h2>
           <p className="text-gray-400 text-sm mt-0.5">Update {lead.clientName}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Client / Deal Name <span className="text-red-400">*</span></label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Client / Deal Name <span className="text-red-400">*</span></label>
               <input type="text" className="input-field" value={form.clientName} onChange={e => setForm(p => ({ ...p, clientName: e.target.value }))} id="edit-client-name" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Lead Source</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Lead Source</label>
               <select className="input-field" value={form.leadSource} onChange={e => setForm(p => ({ ...p, leadSource: e.target.value as LeadSource }))} id="edit-lead-source">
                 {LEAD_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Niche</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Niche</label>
               <select className="input-field" value={form.niche} onChange={e => setForm(p => ({ ...p, niche: e.target.value }))} id="edit-niche">
                 {DEFAULT_NICHES.map(n => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
             {form.niche === 'Other' && (
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1.5">Custom Niche</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Custom Niche</label>
                 <input type="text" className="input-field" value={form.customNiche} onChange={e => setForm(p => ({ ...p, customNiche: e.target.value }))} id="edit-custom-niche" />
               </div>
             )}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Lead Date</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Lead Date</label>
               <input type="date" className="input-field" value={form.leadDate} onChange={e => setForm(p => ({ ...p, leadDate: e.target.value }))} id="edit-lead-date" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Deal Status</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Deal Status</label>
               <select className="input-field" value={form.dealStatus} onChange={e => setForm(p => ({ ...p, dealStatus: e.target.value as DealStatus }))} id="edit-deal-status">
                 {DEAL_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Deal Value (USD)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Deal Value (USD)</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <input type="number" className="input-field pl-7" value={form.dealValueUsd} onChange={e => setForm(p => ({ ...p, dealValueUsd: e.target.value }))} id="edit-deal-value" />
@@ -144,7 +144,7 @@ export default function EditLeadPage() {
               {pkrPreview > 0 && <p className="text-gray-500 text-xs mt-1">≈ PKR {pkrPreview.toLocaleString('en-PK')}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Monthly Retainer (USD)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">Monthly Retainer (USD)</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
                 <input type="number" className="input-field pl-7" value={form.monthlyRetainer} onChange={e => setForm(p => ({ ...p, monthlyRetainer: e.target.value }))} id="edit-retainer" />
@@ -152,14 +152,14 @@ export default function EditLeadPage() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Notes</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Notes</label>
             <textarea className="input-field resize-none" rows={3} value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} id="edit-notes" />
           </div>
           <div className="flex gap-3 pt-2">
-            <Link href="/leads" className="flex-1 py-3 rounded-xl text-gray-300 text-sm font-medium text-center transition-all hover:bg-white/5" style={{ border: '1px solid rgba(45, 58, 94, 0.6)' }}>
+            <Link href="/leads" className="flex-1 py-3 rounded-xl text-gray-700 text-sm font-medium text-center transition-all hover:bg-white/5" style={{ border: '1px solid rgba(0, 0, 0, 0.12)' }}>
               Cancel
             </Link>
-            <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #5c7cfa, #4263eb)' }} id="update-lead-btn">
+            <button type="submit" disabled={saving} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 disabled:opacity-50" style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }} id="update-lead-btn">
               <Save className="w-4 h-4" />
               {saving ? 'Saving...' : 'Update Lead'}
             </button>

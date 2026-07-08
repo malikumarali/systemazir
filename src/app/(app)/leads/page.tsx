@@ -95,7 +95,7 @@ export default function LeadsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white">Lead Source Tracker</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Lead Source Tracker</h2>
           <p className="text-gray-400 text-sm mt-1">
             {leads.length} leads tracked · {stats.closedWon} closed won
           </p>
@@ -103,7 +103,7 @@ export default function LeadsPage() {
         <Link
           href="/leads/new"
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-white text-sm transition-all hover:opacity-90 hover:shadow-lg"
-          style={{ background: 'linear-gradient(135deg, #5c7cfa, #4263eb)' }}
+          style={{ background: 'linear-gradient(135deg, #ef4444, #b91c1c)' }}
           id="add-lead-btn"
         >
           <Plus className="w-4 h-4" />
@@ -119,7 +119,7 @@ export default function LeadsPage() {
             value: stats.total.toString(),
             icon: Target,
             cls: 'stat-neutral',
-            iconColor: 'text-indigo-400',
+            iconColor: 'text-red-600',
           },
           {
             label: 'Closed Won',
@@ -140,7 +140,7 @@ export default function LeadsPage() {
             value: formatCurrency(stats.avgDeal, settings.currencyDisplay, settings.exchangeRate),
             icon: Users,
             cls: 'stat-neutral',
-            iconColor: 'text-indigo-400',
+            iconColor: 'text-red-600',
           },
         ].map(({ label, value, icon: Icon, cls, iconColor }) => (
           <div key={label} className={clsx('rounded-xl p-4', cls)}>
@@ -148,7 +148,7 @@ export default function LeadsPage() {
               <Icon className={clsx('w-4 h-4', iconColor)} />
               <span className="text-gray-400 text-xs font-medium">{label}</span>
             </div>
-            <div className="text-white font-bold text-lg leading-tight">{value}</div>
+            <div className="text-gray-900 font-bold text-lg leading-tight">{value}</div>
           </div>
         ))}
       </div>
@@ -202,7 +202,7 @@ export default function LeadsPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(45, 58, 94, 0.6)' }}>
+              <tr style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}>
                 {[
                   { label: 'Client / Deal', field: 'clientName' as SortField },
                   { label: 'Lead Source', field: null },
@@ -216,7 +216,7 @@ export default function LeadsPage() {
                     key={label}
                     className={clsx(
                       'px-4 py-3 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider',
-                      field ? 'cursor-pointer hover:text-gray-200' : ''
+                      field ? 'cursor-pointer hover:text-gray-800' : ''
                     )}
                     onClick={() => field && toggleSort(field)}
                   >
@@ -234,7 +234,7 @@ export default function LeadsPage() {
                   <td colSpan={isFounder ? 7 : 6} className="px-4 py-12 text-center text-gray-500">
                     No leads found. {search || filterSource || filterNiche || filterStatus
                       ? 'Try clearing filters.'
-                      : <Link href="/leads/new" className="text-indigo-400 hover:underline">Add your first lead →</Link>
+                      : <Link href="/leads/new" className="text-red-600 hover:underline">Add your first lead →</Link>
                     }
                   </td>
                 </tr>
@@ -242,10 +242,10 @@ export default function LeadsPage() {
                 <tr
                   key={lead.id}
                   className="table-row-hover"
-                  style={{ borderBottom: '1px solid rgba(45, 58, 94, 0.3)' }}
+                  style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.06)' }}
                 >
                   <td className="px-4 py-3">
-                    <div className="text-white font-medium text-sm">{lead.clientName}</div>
+                    <div className="text-gray-900 font-medium text-sm">{lead.clientName}</div>
                     {lead.notes && (
                       <div className="text-gray-500 text-xs mt-0.5 truncate max-w-[200px]">
                         {lead.notes}
@@ -258,7 +258,7 @@ export default function LeadsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className="text-gray-300 text-sm">{lead.niche}</span>
+                    <span className="text-gray-700 text-sm">{lead.niche}</span>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-gray-400 text-sm">
@@ -271,7 +271,7 @@ export default function LeadsPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-white font-semibold text-sm">
+                    <div className="text-gray-900 font-semibold text-sm">
                       {formatCurrency(lead.dealValueUsd, settings.currencyDisplay, settings.exchangeRate)}
                     </div>
                     {lead.monthlyRetainer > 0 && (
@@ -285,7 +285,7 @@ export default function LeadsPage() {
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/leads/${lead.id}/edit`}
-                          className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all"
+                          className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-500/10 transition-all"
                           id={`edit-lead-${lead.id}`}
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -311,15 +311,15 @@ export default function LeadsPage() {
       {deleteId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="glass rounded-2xl p-6 max-w-sm w-full mx-4">
-            <h3 className="text-white font-bold text-lg mb-2">Delete Lead?</h3>
+            <h3 className="text-gray-900 font-bold text-lg mb-2">Delete Lead?</h3>
             <p className="text-gray-400 text-sm mb-6">
               This action cannot be undone. The lead record will be permanently deleted.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteId(null)}
-                className="flex-1 py-2.5 rounded-xl text-gray-300 text-sm font-medium transition-all hover:bg-white/5"
-                style={{ border: '1px solid rgba(45, 58, 94, 0.6)' }}
+                className="flex-1 py-2.5 rounded-xl text-gray-700 text-sm font-medium transition-all hover:bg-white/5"
+                style={{ border: '1px solid rgba(0, 0, 0, 0.12)' }}
               >
                 Cancel
               </button>
