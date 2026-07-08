@@ -44,9 +44,9 @@ export default function Sidebar() {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{
-              width: 8, height: 8,
+              width: 10, height: 10,
               background: 'var(--sienna)',
-              borderRadius: 2,
+              borderRadius: '50%',
               flexShrink: 0,
             }} />
             <div>

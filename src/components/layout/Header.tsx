@@ -13,7 +13,7 @@ const PAGE_TITLES: Record<string, { title: string; subtitle: string }> = {
   '/matrix': { title: 'Revenue Matrix', subtitle: 'Expense & revenue breakdown' },
   '/matrix/inbound': { title: 'Inbound Matrix', subtitle: 'Meta Ads & Google Ads performance' },
   '/matrix/outbound': { title: 'Outbound Matrix', subtitle: 'Cold Call, Email & DM funnels' },
-  '/settings': { title: 'Settings', subtitle: 'Configure workspace & exchange rates' },
+  '/settings': { title: 'Settings', subtitle: 'Configure Systemizer workspace' },
 }
 
 export default function Header() {
@@ -55,20 +55,6 @@ export default function Header() {
 
       {/* Right controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        {/* Live Ops indicator */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 6,
-          padding: '5px 10px',
-          border: '1px solid var(--bar-border)',
-          borderRadius: 2,
-          fontSize: 14,
-          color: 'var(--bar-text-dim)',
-          marginRight: 6,
-        }}>
-          <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4a9e6b', flexShrink: 0 }} />
-          Live
-        </div>
-
         {/* Currency toggle */}
         <div style={{
           display: 'flex', alignItems: 'center',
